@@ -1,5 +1,5 @@
 /**
- * D3.js 坐标系 - 支持缩放、平移和视差效果
+ * D3.js 坐标系 - 支持视差效果
  */
 
 import { ref, onMounted, onUnmounted, watch, type Ref } from 'vue'
@@ -20,8 +20,7 @@ export interface StageSegment {
 
 export function useD3Coordinate(
   svgRef: Ref<SVGSVGElement | null>,
-  technologies: Ref<Technology[]>,
-  currentZoom: Ref<number>
+  technologies: Ref<Technology[]>
 ) {
   const hoveredPoint = ref<D3Point | null>(null)
   const hoveredStage = ref<StageSegment | null>(null)
@@ -30,10 +29,8 @@ export function useD3Coordinate(
   const svgWidth = ref(0)
   const svgHeight = ref(0)
 
-  // D3 缩放行为
-  let zoom: d3.ZoomBehavior<SVGSVGElement, unknown> | null = null
+  // D3 选择
   let svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | null = null
-  let mainGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
   let contentGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
   let overlayGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
   let overlayParallaxGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
@@ -48,11 +45,10 @@ export function useD3Coordinate(
 
   // 布局配置 - 可通过 debug 面板调整
   const padding = { top: 100, right: 100, bottom: 150, left: 100 }
-  const pointRadius = ref(12)  // 改为 ref
+  const pointRadius = ref(12)
   const yAxisMax = 5
-  const stageStep = ref(200)  // 改为 ref
-  const depthStep = ref(150)  // 改为 ref
-  const initialScale = ref(0.95)  // 初始缩放比例
+  const stageStep = ref(200)
+  const depthStep = ref(150)
 
   // 内容总尺寸 - 动态计算
   const contentWidth = ref(developmentStages.length * stageStep.value)
@@ -122,9 +118,6 @@ export function useD3Coordinate(
       depthStep.value = params.depthStep
       updateContentDimensions()
     }
-    if (params.initialScale !== undefined) {
-      initialScale.value = params.initialScale
-    }
     render()
   }
 
@@ -134,8 +127,7 @@ export function useD3Coordinate(
       parallaxStrength: parallaxStrength.value,
       pointRadius: pointRadius.value,
       stageStep: stageStep.value,
-      depthStep: depthStep.value,
-      initialScale: initialScale.value
+      depthStep: depthStep.value
     }
   }
 
@@ -247,20 +239,6 @@ export function useD3Coordinate(
     })
   }
 
-  // 更新覆盖层中节点的位置（响应缩放和平移）
-  function updateOverlayPositions(transform: d3.ZoomTransform): void {
-    if (!overlayParallaxGroup) return
-
-    // 对每个节点应用位置变换，但不改变大小
-    overlayParallaxGroup.selectAll<SVGGElement, D3Point>('.point').attr('transform', function(d) {
-      // 计算缩放后的偏移量（不考虑平移，因为那是 parallax 处理的）
-      const scaledX = d.x * (transform.k - 1)
-      const scaledY = d.y * (transform.k - 1)
-      // 加上 D3 zoom 的平移（不包括视差偏移）
-      return `translate(${scaledX + transform.x - parallaxX.value}, ${scaledY + transform.y - parallaxY.value})`
-    })
-  }
-
   // 绘制技术点
   function drawPoints(): void {
     if (!overlayParallaxGroup) return
@@ -291,7 +269,7 @@ export function useD3Coordinate(
         .text(tech.title)
 
       // 外发光效果（默认隐藏）
-      const glow = pointG.append('circle')
+      pointG.append('circle')
         .attr('class', 'point-glow')
         .attr('cx', x)
         .attr('cy', y)
@@ -418,10 +396,7 @@ export function useD3Coordinate(
 
     triggerParallax()
 
-    // 检测悬停
-    const transform = d3.zoomTransform(svgRef.value!)
-    const [worldX, worldY] = transform.invert([mouseX, mouseY])
-
+    // 检测悬停 - 直接使用鼠标坐标（无缩放）
     // 检查技术点
     let foundPoint: D3Point | null = null
     for (const tech of technologies.value) {
@@ -430,9 +405,9 @@ export function useD3Coordinate(
 
       const x = getXPosition(stage.order)
       const y = getYPosition(tech.y_axis)
-      const distance = Math.sqrt((worldX - x) ** 2 + (worldY - y) ** 2)
+      const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2)
 
-      const hitRadius = Math.max(pointRadius.value, 20 / transform.k)
+      const hitRadius = Math.max(pointRadius.value, 20)
 
       if (distance <= hitRadius) {
         foundPoint = { x, y, technology: tech, radius: pointRadius.value }
@@ -442,13 +417,13 @@ export function useD3Coordinate(
 
     // 检查阶段
     let foundStage: StageSegment | null = null
-    if (!foundPoint && worldY >= contentHeight.value && worldY <= contentHeight.value + 100) {
+    if (!foundPoint && mouseY >= contentHeight.value && mouseY <= contentHeight.value + 100) {
       for (const stage of developmentStages) {
         const x = padding.left + stageStep.value * (stage.order - 1)
         const segmentX = x + stageStep.value * 0.15
         const segmentWidth = stageStep.value * 0.7
 
-        if (worldX >= segmentX && worldX <= segmentX + segmentWidth) {
+        if (mouseX >= segmentX && mouseX <= segmentX + segmentWidth) {
           foundStage = { stage }
           break
         }
@@ -492,24 +467,6 @@ export function useD3Coordinate(
       .attr('width', svgWidth.value)
       .attr('height', svgHeight.value)
 
-    // 初始化时居中
-    if (!contentGroup || contentGroup.selectAll('*').size() === 0) {
-      const contentCenterX = padding.left + contentWidth.value / 2
-      const contentCenterY = padding.top + contentHeight.value / 2
-
-      const initialTransform = d3.zoomIdentity
-        .translate(svgWidth.value / 2 - contentCenterX, svgHeight.value / 2 - contentCenterY)
-        .scale(initialScale.value)  // 应用初始缩放
-
-      if (zoom && svgRef.value) {
-        // 应用初始变换
-        d3.select(svgRef.value)
-          .call(zoom.transform, initialTransform)
-        // 更新覆盖层位置
-        updateOverlayPositions(initialTransform)
-      }
-    }
-
     render()
   }
 
@@ -521,11 +478,8 @@ export function useD3Coordinate(
 
     svg = d3.select(svgRef.value)
 
-    // 创建主组（用于缩放/平移）
-    mainGroup = svg.append('g')
-
     // 创建内容组（用于视差效果）
-    contentGroup = mainGroup.append('g')
+    contentGroup = svg.append('g')
 
     // 创建覆盖层组（用于节点和文本，不受缩放影响）
     overlayGroup = svg.append('g').attr('class', 'overlay-group')
@@ -534,21 +488,6 @@ export function useD3Coordinate(
     overlayParallaxGroup = overlayGroup.append('g').attr('class', 'overlay-parallax-group')
 
     console.log('SVG groups created')
-
-    // 设置缩放行为
-    zoom = d3.zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.1, 5])
-      .on('zoom', (event) => {
-        if (mainGroup) {
-          mainGroup.attr('transform', event.transform)
-          // 更新缩放值
-          currentZoom.value = event.transform.k
-          // 更新覆盖层中节点的位置
-          updateOverlayPositions(event.transform)
-        }
-      })
-
-    svg.call(zoom as any)
 
     handleResize()
     window.addEventListener('resize', handleResize)
@@ -580,7 +519,6 @@ export function useD3Coordinate(
       pointRadius.value = 12
       stageStep.value = 200
       depthStep.value = 150
-      initialScale.value = 0.95
       updateContentDimensions()
       render()
 
@@ -608,7 +546,6 @@ export function useD3Coordinate(
     hoveredPoint,
     hoveredStage,
     handleResize,
-    render,
-    zoom
+    render
   }
 }

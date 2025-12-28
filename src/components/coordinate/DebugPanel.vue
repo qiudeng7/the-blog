@@ -66,9 +66,6 @@ const paramDefinitions = {
   '交互效果': [
     { key: 'parallaxStrength', label: '视差强度', type: 'number', default: 0.06 }
   ],
-  '视图': [
-    { key: 'initialScale', label: '初始缩放', type: 'number', default: 0.95 }
-  ],
   '样式': [
     { key: 'pointRadius', label: '点半径', type: 'number', default: 12 }
   ],
