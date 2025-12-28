@@ -42,7 +42,6 @@
           <!-- Icon区域 -->
           <div class="tech-icon-wrapper">
             <div class="tech-icon-container" v-html="technology.icon || getDefaultIcon()"></div>
-            <div class="tech-icon-shine"></div>
           </div>
 
           <!-- 内容区域 -->
@@ -62,7 +61,6 @@
                   <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                   </svg>
-                  <div class="star-shine"></div>
                 </div>
               </div>
             </div>
@@ -210,37 +208,12 @@ defineExpose({
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-/* Icon 反光效果 */
-.tech-icon-shine {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.3) 50%,
-    transparent 70%
-  );
-  animation: shineMove 3s ease-in-out infinite;
-}
-
 @keyframes iconFlip {
   0%, 100% {
     transform: rotateY(0deg);
   }
   50% {
     transform: rotateY(180deg);
-  }
-}
-
-@keyframes shineMove {
-  0% {
-    transform: translateX(-100%) translateY(-100%) rotate(45deg);
-  }
-  100% {
-    transform: translateX(100%) translateY(100%) rotate(45deg);
   }
 }
 
@@ -303,33 +276,6 @@ defineExpose({
   height: 18px;
   color: #ffffff;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-  position: relative;
-  z-index: 1;
-}
-
-/* 星星反光效果 */
-.star-shine {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.5) 50%,
-    transparent 70%
-  );
-  animation: starShine 3s ease-in-out infinite;
-}
-
-@keyframes starShine {
-  0% {
-    transform: translateX(-100%) translateY(-100%) rotate(45deg);
-  }
-  100% {
-    transform: translateX(100%) translateY(100%) rotate(45deg);
-  }
 }
 
 /* 原有样式保持 */
