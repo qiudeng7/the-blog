@@ -170,20 +170,17 @@ defineExpose({
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
   z-index: 2000;
   pointer-events: none;
-  position: relative;
   /* 弥散渐变边框 */
   border: 2px solid transparent;
   background-clip: padding-box;
+  position: relative;
 }
 
-/* 弥散光晕效果 */
+/* 弥散光晕边框效果 */
 .tooltip::before {
   content: '';
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
+  inset: -2px;
   background: linear-gradient(45deg,
     rgba(96, 165, 250, 0.6),
     rgba(139, 92, 246, 0.6),
@@ -197,19 +194,22 @@ defineExpose({
 }
 
 /* 内层微光 */
+.tooltip > * {
+  position: relative;
+  z-index: 2;
+}
+
 .tooltip::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: radial-gradient(circle at 30% 30%,
     rgba(96, 165, 250, 0.1) 0%,
     transparent 50%
   );
   border-radius: inherit;
   pointer-events: none;
+  z-index: 1;
 }
 
 @keyframes diffuseGlow {
