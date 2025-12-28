@@ -160,41 +160,16 @@ defineExpose({
   position: fixed;
   z-index: 2000;
   pointer-events: none;
-  padding: 2px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(45deg,
-    rgba(96, 165, 250, 0.6),
-    rgba(139, 92, 246, 0.6),
-    rgba(168, 85, 247, 0.6)
-  );
-  background-size: 400% 400%;
-  animation: diffuseGlow 4s ease-in-out infinite;
 }
 
 .tooltip-content {
-  background: linear-gradient(135deg,
-    rgba(30, 41, 59, 0.95) 0%,
-    rgba(27, 39, 53, 0.98) 50%,
-    rgba(15, 23, 42, 0.95) 100%
-  );
-  backdrop-filter: blur(10px);
-  border-radius: calc(var(--radius-lg) - 2px);
+  background: #ffffff;
+  border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   max-width: 400px;
   max-height: 500px;
   overflow-y: auto;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-}
-
-@keyframes diffuseGlow {
-  0%, 100% {
-    background-position: 0% 50%;
-    opacity: 0.7;
-  }
-  50% {
-    background-position: 100% 50%;
-    opacity: 1;
-  }
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 /* 阶段 tooltip 样式保持不变 */
@@ -221,8 +196,8 @@ defineExpose({
 .tech-icon-container {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.05));
+  border: 2px solid rgba(59, 130, 246, 0.2);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -234,8 +209,8 @@ defineExpose({
 .tech-icon-container :deep(svg) {
   width: 48px;
   height: 48px;
-  color: rgba(255, 255, 255, 0.9);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  color: #3b82f6;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 /* 内容区域 */
@@ -248,11 +223,11 @@ defineExpose({
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0 0 8px 0;
-  color: #ffffff;
+  color: #1e293b;
 }
 
 .tech-description {
-  color: rgba(255, 255, 255, 0.7);
+  color: #64748b;
   font-size: 0.875rem;
   line-height: 1.5;
   margin: 0 0 16px 0;
@@ -267,7 +242,7 @@ defineExpose({
 
 .mastery-label {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #64748b;
   white-space: nowrap;
 }
 
@@ -288,7 +263,7 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 }
 
@@ -296,7 +271,7 @@ defineExpose({
   width: 18px;
   height: 18px;
   color: #ffffff;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 1px 2px rgba(245, 158, 11, 0.3));
 }
 
 /* 原有样式保持 */
@@ -304,11 +279,11 @@ defineExpose({
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: var(--spacing-sm);
-  color: var(--color-accent);
+  color: #1e293b;
 }
 
 .tooltip-description {
-  color: var(--color-text-secondary);
+  color: #64748b;
   margin-bottom: var(--spacing-md);
   line-height: 1.6;
 }
@@ -321,7 +296,7 @@ defineExpose({
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: var(--spacing-xs);
-  color: var(--color-text-primary);
+  color: #334155;
 }
 
 .activity-list,
@@ -338,7 +313,7 @@ defineExpose({
   padding: var(--spacing-xs) 0;
   padding-left: var(--spacing-md);
   position: relative;
-  color: var(--color-text-secondary);
+  color: #64748b;
   font-size: 0.875rem;
   line-height: 1.5;
 }
@@ -349,7 +324,7 @@ defineExpose({
   content: '•';
   position: absolute;
   left: 0;
-  color: var(--color-accent);
+  color: #3b82f6;
 }
 
 .tooltip-meta {
