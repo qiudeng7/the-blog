@@ -45,7 +45,7 @@ export function useD3Coordinate(
 
   // 布局配置 - 可通过 debug 面板调整
   const padding = { top: 100, right: 10, bottom: 150, left: 150 }
-  const pointRadius = ref(12)
+  const pointRadius = ref(9)
   const yAxisMax = 5
   const stageStep = ref(230)
   const depthStep = ref(160)
@@ -302,22 +302,23 @@ export function useD3Coordinate(
       pointG.append('text')
         .attr('class', 'point-label')
         .attr('x', x)
-        .attr('y', y - pointRadius.value - 8)
+        .attr('y', y - pointRadius.value - 6)
         .attr('text-anchor', 'middle')
-        .attr('fill', '#ffffff')
-        .attr('font-size', '14px')
-        .attr('font-weight', '500')
+        .attr('fill', 'rgba(255, 255, 255, 0.9)')
+        .attr('font-size', '13px')
+        .attr('font-weight', '400')
+        .attr('letter-spacing', '0.5px')
         .attr('pointer-events', 'none')
         .text(tech.title)
 
-      // 外发光效果（默认隐藏）
+      // 外发光效果（默认显示微弱光晕）
       pointG.append('circle')
         .attr('class', 'point-glow')
         .attr('cx', x)
         .attr('cy', y)
-        .attr('r', pointRadius.value * 2)
+        .attr('r', pointRadius.value * 2.5)
         .attr('fill', 'url(#glow-gradient)')
-        .style('opacity', 0)
+        .style('opacity', 0.3)
 
       // 主点
       pointG.append('circle')
@@ -326,9 +327,10 @@ export function useD3Coordinate(
         .attr('cy', y)
         .attr('r', pointRadius.value)
         .attr('fill', getMasteryColor(tech.mastery))
-        .attr('stroke', 'rgba(255, 255, 255, 0.5)')
-        .attr('stroke-width', 2)
+        .attr('stroke', 'rgba(255, 255, 255, 0.6)')
+        .attr('stroke-width', 1.5)
         .style('cursor', 'pointer')
+        .style('filter', 'drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))')
     })
 
     // 添加渐变定义 - 白色光晕
@@ -392,21 +394,41 @@ export function useD3Coordinate(
     overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
       .attr('r', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? pointRadius.value * 1.5 : pointRadius.value
+        return data.technology.title === techTitle ? pointRadius.value * 1.6 : pointRadius.value
       })
       .attr('stroke', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? '#ffffff' : 'rgba(255, 255, 255, 0.5)'
+        return data.technology.title === techTitle ? '#ffffff' : 'rgba(255, 255, 255, 0.6)'
       })
       .attr('stroke-width', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? 3 : 2
+        return data.technology.title === techTitle ? 2.5 : 1.5
+      })
+      .style('filter', function() {
+        const data = d3.select(this).datum() as D3Point
+        return data.technology.title === techTitle
+          ? 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.6))'
+          : 'drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))'
       })
 
     overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-glow')
+      .attr('r', function() {
+        const data = d3.select(this).datum() as D3Point
+        return data.technology.title === techTitle ? pointRadius.value * 3 : pointRadius.value * 2.5
+      })
       .style('opacity', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? 1 : 0
+        return data.technology.title === techTitle ? 0.8 : 0.3
+      })
+
+    overlayParallaxGroup.selectAll<SVGTextElement, D3Point>('.point-label')
+      .attr('fill', function() {
+        const data = d3.select(this).datum() as D3Point
+        return data.technology.title === techTitle ? '#ffffff' : 'rgba(255, 255, 255, 0.9)'
+      })
+      .attr('font-weight', function() {
+        const data = d3.select(this).datum() as D3Point
+        return data.technology.title === techTitle ? '600' : '400'
       })
   }
 
@@ -572,7 +594,7 @@ export function useD3Coordinate(
     window.addEventListener('debug-reset-params', () => {
       // 重置为默认值
       parallaxStrength.value = 0.06
-      pointRadius.value = 12
+      pointRadius.value = 9
       stageStep.value = 230
       depthStep.value = 160
       updateContentDimensions()
