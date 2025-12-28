@@ -174,7 +174,6 @@ watch(() => props.technology, () => {
   bottom: 0;
   margin: 0;
   padding: 0;
-  z-index: 1;
 }
 
 .centered-svg {

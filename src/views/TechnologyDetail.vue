@@ -1,15 +1,21 @@
 <template>
-  <div class="technology-detail-container" ref="containerRef">
-    <!-- 返回按钮 -->
-    <button class="back-button" @click="goBack">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-      </svg>
-      <span>返回</span>
-    </button>
+  <div class="technology-detail-page">
+    <!-- 背景层（不参与动画） -->
+    <div class="detail-background"></div>
 
-    <!-- D3 居中坐标系 -->
-    <D3CenteredCoordinate :technology="technology" />
+    <!-- 内容容器（参与动画） -->
+    <div class="detail-content" ref="containerRef">
+      <!-- 返回按钮 -->
+      <button class="back-button" @click="goBack">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        <span>返回</span>
+      </button>
+
+      <!-- D3 居中坐标系 -->
+      <D3CenteredCoordinate :technology="technology" />
+    </div>
   </div>
 </template>
 
@@ -57,7 +63,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.technology-detail-container {
+.technology-detail-page {
   position: fixed;
   top: 0;
   left: 0;
@@ -65,6 +71,15 @@ onUnmounted(() => {
   bottom: 0;
   margin: 0;
   padding: 0;
+}
+
+/* 背景层（不参与动画） */
+.detail-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   /* 深空背景渐变 */
   --bg-color-1: #1a2a28;
   --bg-color-2: #15221f;
@@ -81,10 +96,11 @@ onUnmounted(() => {
     var(--bg-color-4) 75%,
     var(--bg-color-5) 100%
   );
+  z-index: 0;
 }
 
 /* Glow overlay */
-.technology-detail-container::before {
+.detail-background::before {
   content: '';
   position: absolute;
   top: 0;
@@ -97,7 +113,16 @@ onUnmounted(() => {
     transparent 70%);
   mix-blend-mode: screen;
   pointer-events: none;
-  z-index: 0;
+}
+
+/* 内容容器（参与动画） */
+.detail-content {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
 }
 
 /* 淡入转场动画 */
