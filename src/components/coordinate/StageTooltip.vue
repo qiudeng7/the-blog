@@ -324,7 +324,7 @@ defineExpose({
   content: '•';
   position: absolute;
   left: 0;
-  color: #60a5fa;
+  color: #246B64;
 }
 
 .tooltip-meta {
