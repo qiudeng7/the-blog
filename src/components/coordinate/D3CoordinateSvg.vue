@@ -72,12 +72,21 @@ function handleMouseMove(event: MouseEvent) {
   bottom: 0;
   margin: 0;
   padding: 0;
+  /* CSS 变量控制的背景渐变 */
+  --bg-color-1: #1a0632;
+  --bg-color-2: #140426;
+  --bg-color-3: #0c021a;
+  --bg-color-4: #06020e;
+  --bg-color-5: #020108;
+  --glow-color-1: rgba(60, 80, 255, 0.08);
+  --glow-color-2: rgba(40, 60, 200, 0.05);
+
   background: radial-gradient(circle at 50% 50%,
-    #1a0632 0%,    /* Deep purple */
-    #140426 25%,
-    #0c021a 50%,
-    #06020e 75%,
-    #020108 100%   /* Almost black */
+    var(--bg-color-1) 0%,
+    var(--bg-color-2) 25%,
+    var(--bg-color-3) 50%,
+    var(--bg-color-4) 75%,
+    var(--bg-color-5) 100%
   );
 }
 
@@ -90,8 +99,8 @@ function handleMouseMove(event: MouseEvent) {
   right: 0;
   bottom: 0;
   background: radial-gradient(circle at 50% 50%,
-    rgba(60, 80, 255, 0.08) 0%,
-    rgba(40, 60, 200, 0.05) 40%,
+    var(--glow-color-1) 0%,
+    var(--glow-color-2) 40%,
     transparent 70%);
   mix-blend-mode: screen;
   pointer-events: none;

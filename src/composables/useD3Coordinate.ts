@@ -181,11 +181,67 @@ export function useD3Coordinate(
       depthStep.value = params.depthStep
       updateContentDimensions()
     }
+
+    // 处理颜色参数 - 更新 CSS 变量
+    const container = document.querySelector('.d3-coordinate-container') as HTMLElement
+    if (container) {
+      if (params.bgColor1 !== undefined) {
+        container.style.setProperty('--bg-color-1', params.bgColor1)
+      }
+      if (params.bgColor2 !== undefined) {
+        container.style.setProperty('--bg-color-2', params.bgColor2)
+      }
+      if (params.bgColor3 !== undefined) {
+        container.style.setProperty('--bg-color-3', params.bgColor3)
+        container.style.setProperty('--bg-color-4', adjustBrightness(params.bgColor3, 0.5))
+        container.style.setProperty('--bg-color-5', adjustBrightness(params.bgColor3, 0.25))
+      }
+      if (params.glowColor !== undefined) {
+        const color = params.glowColor
+        // 解析 rgba 并调整透明度
+        container.style.setProperty('--glow-color-1', color)
+        container.style.setProperty('--glow-color-2', adjustRgbaOpacity(color, 0.6))
+      }
+    }
+
     render()
+  }
+
+  // 辅助函数：调整颜色亮度
+  function adjustBrightness(hex: string, factor: number): string {
+    // 移除 # 号
+    const color = hex.replace('#', '')
+    const r = parseInt(color.substr(0, 2), 16)
+    const g = parseInt(color.substr(2, 2), 16)
+    const b = parseInt(color.substr(4, 2), 16)
+
+    const newR = Math.round(r * factor)
+    const newG = Math.round(g * factor)
+    const newB = Math.round(b * factor)
+
+    return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`
+  }
+
+  // 辅助函数：调整 rgba 透明度
+  function adjustRgbaOpacity(rgba: string, factor: number): string {
+    const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/)
+    if (match) {
+      const [, r, g, b, a = '1'] = match
+      const opacity = parseFloat(a) * factor
+      return `rgba(${r}, ${g}, ${b}, ${opacity})`
+    }
+    return rgba
   }
 
   // 获取当前参数值
   function getCurrentParams() {
+    // 从 CSS 变量读取当前颜色值
+    const container = document.querySelector('.d3-coordinate-container') as HTMLElement
+    const bgColor1 = container?.style.getPropertyValue('--bg-color-1') || '#1a0632'
+    const bgColor2 = container?.style.getPropertyValue('--bg-color-2') || '#140426'
+    const bgColor3 = container?.style.getPropertyValue('--bg-color-3') || '#0c021a'
+    const glowColor = container?.style.getPropertyValue('--glow-color-1') || 'rgba(60, 80, 255, 0.08)'
+
     return {
       parallaxStrength: parallaxStrength.value,
       bgParallaxMult: bgParallaxMult.value,
@@ -193,7 +249,11 @@ export function useD3Coordinate(
       pointParallaxMult: pointParallaxMult.value,
       pointRadius: pointRadius.value,
       stageStep: stageStep.value,
-      depthStep: depthStep.value
+      depthStep: depthStep.value,
+      bgColor1,
+      bgColor2,
+      bgColor3,
+      glowColor
     }
   }
 
@@ -552,36 +612,36 @@ export function useD3Coordinate(
       pulse()
     }
 
-    // 标签动画
-    overlayParallaxGroup.selectAll<SVGTextElement, D3Point>('.point-label')
-      .transition()
-      .duration(duration)
-      .ease(d3.easeCubicOut)
-      .attr('fill', function() {
-        const data = d3.select(this).datum() as D3Point
-        if (data.technology.title === techTitle) {
-          return '#ffffff'
-        }
-        return techTitle ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.9)'
-      })
-      .attr('font-weight', function() {
-        const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? '700' : '400'
-      })
-      .attr('font-size', function() {
-        const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? '15px' : '13px'
-      })
-      .style('text-shadow', function() {
-        const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle
-          ? '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)'
-          : 'none'
-      })
-      .style('opacity', function() {
-        const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? 1 : (techTitle ? 0.5 : 1)
-      })
+    // 标签动画 - 已禁用（文字不需要动画）
+    // overlayParallaxGroup.selectAll<SVGTextElement, D3Point>('.point-label')
+    //   .transition()
+    //   .duration(duration)
+    //   .ease(d3.easeCubicOut)
+    //   .attr('fill', function() {
+    //     const data = d3.select(this).datum() as D3Point
+    //     if (data.technology.title === techTitle) {
+    //       return '#ffffff'
+    //     }
+    //     return techTitle ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.9)'
+    //   })
+    //   .attr('font-weight', function() {
+    //     const data = d3.select(this).datum() as D3Point
+    //     return data.technology.title === techTitle ? '700' : '400'
+    //   })
+    //   .attr('font-size', function() {
+    //     const data = d3.select(this).datum() as D3Point
+    //     return data.technology.title === techTitle ? '15px' : '13px'
+    //   })
+    //   .style('text-shadow', function() {
+    //     const data = d3.select(this).datum() as D3Point
+    //     return data.technology.title === techTitle
+    //       ? '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)'
+    //       : 'none'
+    //   })
+    //   .style('opacity', function() {
+    //     const data = d3.select(this).datum() as D3Point
+    //     return data.technology.title === techTitle ? 1 : (techTitle ? 0.5 : 1)
+    //   })
   }
 
   // 重新渲染
