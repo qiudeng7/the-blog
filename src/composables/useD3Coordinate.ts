@@ -253,11 +253,11 @@ export function useD3Coordinate(
 
     // 对每个节点应用位置变换，但不改变大小
     overlayParallaxGroup.selectAll<SVGGElement, D3Point>('.point').attr('transform', function(d) {
-      // 计算变换后的位置
-      const transformedX = d.x * transform.k + transform.x
-      const transformedY = d.y * transform.k + transform.y
-      // 只移动位置，不改变原始坐标（因为节点的 cx, cy 还是用 d.x, d.y）
-      return `translate(${transformedX - d.x}, ${transformedY - d.y})`
+      // 计算缩放后的偏移量（不考虑平移，因为那是 parallax 处理的）
+      const scaledX = d.x * (transform.k - 1)
+      const scaledY = d.y * (transform.k - 1)
+      // 加上 D3 zoom 的平移（不包括视差偏移）
+      return `translate(${scaledX + transform.x - parallaxX.value}, ${scaledY + transform.y - parallaxY.value})`
     })
   }
 
