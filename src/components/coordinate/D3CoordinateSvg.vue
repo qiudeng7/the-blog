@@ -63,7 +63,7 @@ function handleMouseMove(event: MouseEvent) {
 }
 </script>
 
-<style scoped>
+<style>
 .d3-coordinate-container {
   position: fixed;
   top: 0;
@@ -79,29 +79,25 @@ function handleMouseMove(event: MouseEvent) {
   width: 100%;
   height: 100%;
   display: block;
-}
-
-/* 禁用文本选择 */
-.coordinate-svg {
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
 }
 
-/* 节点呼吸浮动动画 */
-@keyframes breathe-float {
+/* 节点光晕呼吸动画 */
+@keyframes breathe-glow {
   0%, 100% {
-    transform: translateY(0) scale(1);
+    opacity: 0.3;
   }
   50% {
-    transform: translateY(var(--float-distance, -5px)) scale(var(--breathe-scale, 1.03));
+    opacity: var(--glow-max-opacity, 0.8);
   }
 }
 
 /* 为节点应用动画 */
-.point {
-  transform-origin: center center;
-  will-change: transform;
+.point-glow {
+  animation: breathe-glow var(--glow-duration, 4s) ease-in-out var(--glow-delay, 0s) infinite;
+  will-change: opacity;
 }
 </style>

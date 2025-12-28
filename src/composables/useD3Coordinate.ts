@@ -359,21 +359,14 @@ export function useD3Coordinate(
       const x = getXPosition(stage.order, tech.x_position)
       const y = getYPosition(tech.y_axis)
 
-      // 为每个节点生成独特的呼吸浮动参数
-      const floatDuration = 3 + Math.random() * 2  // 3-5秒
-      const floatDelay = Math.random() * 2  // 0-2秒延迟
-      const floatDistance = 3 + Math.random() * 4  // 3-7px浮动距离
-      const breatheScale = 1.02 + Math.random() * 0.03  // 1.02-1.05缩放比例
+      // 为每个节点生成独特的光晕呼吸参数
+      const glowDuration = 3 + Math.random() * 2  // 3-5秒
+      const glowDelay = Math.random() * 2  // 0-2秒延迟
+      const glowMaxOpacity = 0.6 + Math.random() * 0.3  // 0.6-0.9最大透明度
 
       const pointG = pointsGroup.append('g')
         .attr('class', `point point-${tech.title}`)
         .datum({ x, y, technology: tech, radius: pointRadius.value })
-        .style('animation', `breathe-float ${floatDuration}s ease-in-out ${floatDelay}s infinite`)
-
-      // 将动画参数作为 CSS 变量存储
-      pointG
-        .style('--float-distance', `${floatDistance}px`)
-        .style('--breathe-scale', breatheScale)
 
       // 文本标签（在节点上方）
       pointG.append('text')
@@ -388,24 +381,29 @@ export function useD3Coordinate(
         .attr('pointer-events', 'none')
         .text(tech.title)
 
-      // 外发光效果（默认显示微弱光晕）
+      // 外发光效果（带呼吸动画）
       pointG.append('circle')
         .attr('class', 'point-glow')
         .attr('cx', x)
         .attr('cy', y)
         .attr('r', pointRadius.value * 2.5)
         .attr('fill', 'url(#glow-gradient)')
-        .style('opacity', 0.3)
+        .style('--glow-duration', `${glowDuration}s`)
+        .style('--glow-delay', `${glowDelay}s`)
+        .style('--glow-max-opacity', glowMaxOpacity)
 
-      // 主点
+      // 主点 - 空心圆环样式
+      const ringWidth = pointRadius.value * 0.4  // 圆环宽度（2/5 of radius）
+      const outerRadius = pointRadius.value  // 外圆半径
+
       pointG.append('circle')
         .attr('class', 'point-circle')
         .attr('cx', x)
         .attr('cy', y)
-        .attr('r', pointRadius.value)
-        .attr('fill', getMasteryColor(tech.mastery))
-        .attr('stroke', 'rgba(255, 255, 255, 0.6)')
-        .attr('stroke-width', 1.5)
+        .attr('r', outerRadius - ringWidth / 2)  // 中心线半径
+        .attr('fill', 'transparent')
+        .attr('stroke', getMasteryColor(tech.mastery))
+        .attr('stroke-width', ringWidth)
         .style('cursor', 'pointer')
         .style('filter', 'drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))')
     })
@@ -470,8 +468,8 @@ export function useD3Coordinate(
     overlayParallaxGroup.selectAll('.point-glow').interrupt()
     overlayParallaxGroup.selectAll('.point-label').interrupt()
 
-    // 控制呼吸动画：悬停时暂停，未悬停时继续
-    overlayParallaxGroup.selectAll('.point').style('animation-play-state', function() {
+    // 控制光晕呼吸动画：悬停时暂停，未悬停时继续
+    overlayParallaxGroup.selectAll('.point-glow').style('animation-play-state', function() {
       const data = d3.select(this).datum() as D3Point
       return data.technology.title === techTitle ? 'paused' : 'running'
     })
@@ -481,25 +479,30 @@ export function useD3Coordinate(
       return data.technology.title === techTitle
     })
 
-    // 主点动画 - 缩放和边框
+    // 主点动画 - 空心圆环的缩放和边框
+    const baseRingWidth = pointRadius.value * 0.4
+    const baseRadius = pointRadius.value - baseRingWidth / 2
+
     overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
       .transition()
       .duration(duration)
       .ease(d3.easeCubicOut)
       .attr('r', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? pointRadius.value * 1.8 : pointRadius.value
+        // 悬停时放大圆环
+        return data.technology.title === techTitle ? baseRadius * 1.5 : baseRadius
       })
       .attr('stroke', function() {
         const data = d3.select(this).datum() as D3Point
         if (data.technology.title === techTitle) {
           return '#ffffff'
         }
-        return techTitle ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.6)'
+        return techTitle ? 'rgba(255, 255, 255, 0.3)' : getMasteryColor(data.technology.mastery)
       })
       .attr('stroke-width', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? 3 : 1.5
+        // 悬停时增加环宽
+        return data.technology.title === techTitle ? baseRingWidth * 1.5 : baseRingWidth
       })
       .style('filter', function() {
         const data = d3.select(this).datum() as D3Point
