@@ -3,9 +3,10 @@
     <Transition name="tooltip">
       <div
         v-if="visible"
-        class="tooltip"
+        class="tooltip-wrapper"
         :style="{ left: x + 'px', top: y + 'px' }"
       >
+        <div class="tooltip-content">
         <div v-if="stage" class="stage-tooltip">
           <h3 class="tooltip-title">{{ stage.name }}</h3>
           <p class="tooltip-description">{{ stage.description }}</p>
@@ -68,6 +69,7 @@
               </div>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </Transition>
@@ -154,62 +156,34 @@ defineExpose({
 </script>
 
 <style scoped>
-.tooltip {
+.tooltip-wrapper {
   position: fixed;
+  z-index: 2000;
+  pointer-events: none;
+  padding: 2px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(45deg,
+    rgba(96, 165, 250, 0.6),
+    rgba(139, 92, 246, 0.6),
+    rgba(168, 85, 247, 0.6)
+  );
+  background-size: 400% 400%;
+  animation: diffuseGlow 4s ease-in-out infinite;
+}
+
+.tooltip-content {
   background: linear-gradient(135deg,
     rgba(30, 41, 59, 0.95) 0%,
     rgba(27, 39, 53, 0.98) 50%,
     rgba(15, 23, 42, 0.95) 100%
   );
   backdrop-filter: blur(10px);
-  border-radius: var(--radius-lg);
+  border-radius: calc(var(--radius-lg) - 2px);
   padding: var(--spacing-lg);
   max-width: 400px;
   max-height: 500px;
   overflow-y: auto;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-  z-index: 2000;
-  pointer-events: none;
-  /* 弥散渐变边框 */
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  position: relative;
-}
-
-/* 弥散光晕边框效果 */
-.tooltip::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  background: linear-gradient(45deg,
-    rgba(96, 165, 250, 0.6),
-    rgba(139, 92, 246, 0.6),
-    rgba(168, 85, 247, 0.6),
-    rgba(96, 165, 250, 0.6)
-  );
-  border-radius: inherit;
-  z-index: -1;
-  animation: diffuseGlow 4s ease-in-out infinite;
-  background-size: 400% 400%;
-}
-
-/* 内层微光 */
-.tooltip > * {
-  position: relative;
-  z-index: 2;
-}
-
-.tooltip::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 30% 30%,
-    rgba(96, 165, 250, 0.1) 0%,
-    transparent 50%
-  );
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 1;
 }
 
 @keyframes diffuseGlow {
