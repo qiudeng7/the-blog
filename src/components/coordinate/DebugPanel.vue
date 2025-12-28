@@ -90,15 +90,19 @@ onMounted(() => {
     expandedCategories.value.add(category)
   })
 
-  // 初始化默认值
+  // 初始化默认值（作为占位符，会被实际值覆盖）
   Object.values(paramDefinitions).flat().forEach(param => {
     currentValues.value[param.key] = param.default
   })
 
-  // 监听外部值更新
+  // 监听外部值更新（会覆盖上面的默认值）
   window.addEventListener('debug-update-values', ((event: CustomEvent) => {
-    currentValues.value = { ...currentValues.value, ...event.detail }
+    // 完全替换为实际值，而不是合并
+    currentValues.value = { ...event.detail }
   }) as EventListener)
+
+  // 主动请求一次当前的参数值
+  window.dispatchEvent(new CustomEvent('debug-request-values'))
 })
 
 // 切换折叠状态

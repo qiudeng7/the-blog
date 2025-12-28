@@ -521,6 +521,13 @@ export function useD3Coordinate(
       }))
     }) as EventListener)
 
+    // 监听请求参数值事件
+    window.addEventListener('debug-request-values', (() => {
+      window.dispatchEvent(new CustomEvent('debug-update-values', {
+        detail: getCurrentParams()
+      }))
+    }) as EventListener)
+
     // 监听重置事件
     window.addEventListener('debug-reset-params', () => {
       // 重置为默认值
@@ -536,13 +543,6 @@ export function useD3Coordinate(
         detail: getCurrentParams()
       }))
     })
-
-    // 发送初始参数值
-    setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('debug-update-values', {
-        detail: getCurrentParams()
-      }))
-    }, 100)
 
     console.log('useD3Coordinate initialized')
   })
