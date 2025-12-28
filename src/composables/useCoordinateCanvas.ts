@@ -437,15 +437,22 @@ export function useCoordinateCanvas(
 
     // 初始化时将坐标系居中并偏上
     if (!isInitialized) {
-      // 计算居中位置
-      const centeredX = (canvasWidth.value - contentWidth) / 2
-      const centeredY = (canvasHeight.value - contentHeight) / 2
+      // 内容的中心点（世界坐标）
+      const contentCenterX = padding.left + contentWidth / 2
+      const contentCenterY = padding.top + contentHeight / 2
 
-      // 向上偏移 20%
-      const upwardOffset = canvasHeight.value * 0.2
+      // 画布的中心点（屏幕坐标）
+      const screenCenterX = canvasWidth.value / 2
+      const screenCenterY = canvasHeight.value / 2
 
-      translateX.value = centeredX
-      translateY.value = centeredY - upwardOffset
+      // 计算居中所需的偏移
+      // 世界坐标转屏幕坐标：screenX = worldX * scale + translateX
+      // 所以：translateX = screenCenterX - contentCenterX * scale
+      translateX.value = screenCenterX - contentCenterX * scale.value
+      translateY.value = screenCenterY - contentCenterY * scale.value
+
+      // 向上偏移 10%（让坐标系偏上一点）
+      translateY.value -= canvasHeight.value * 0.1
 
       isInitialized = true
     }
