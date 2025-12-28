@@ -73,10 +73,10 @@ const paramDefinitions = {
     { key: 'pointRadius', label: '点半径', type: 'number', default: 9 }
   ],
   '颜色': [
-    { key: 'bgColor1', label: '背景色1(中心)', type: 'text', default: '#1b2735' },
-    { key: 'bgColor2', label: '背景色2(中)', type: 'text', default: '#161e29' },
-    { key: 'bgColor3', label: '背景色3(边缘)', type: 'text', default: '#090a0f' },
-    { key: 'glowColor', label: '光晕颜色', type: 'text', default: 'rgba(60, 80, 255, 0.08)' }
+    { key: 'bgColor1', label: '背景色1(中心)', type: 'text', default: '#1a2a28' },
+    { key: 'bgColor2', label: '背景色2(中)', type: 'text', default: '#15221f' },
+    { key: 'bgColor3', label: '背景色3(边缘)', type: 'text', default: '#070a0c' },
+    { key: 'glowColor', label: '光晕颜色', type: 'text', default: 'rgba(36, 107, 100, 0.08)' }
   ],
   '布局': [
     { key: 'stageStep', label: '阶段间距', type: 'number', default: 300 },

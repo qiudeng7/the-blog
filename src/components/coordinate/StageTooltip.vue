@@ -163,7 +163,7 @@ defineExpose({
 }
 
 .tooltip-content {
-  background: #1e293b;
+  background: #1a2625;
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   max-width: 400px;
