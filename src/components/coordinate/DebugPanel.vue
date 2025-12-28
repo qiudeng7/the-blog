@@ -64,7 +64,7 @@ import { ref, onMounted } from 'vue'
 // 参数定义（按分类组织）
 const paramDefinitions = {
   '交互效果': [
-    { key: 'parallaxStrength', label: '视差强度', type: 'number', default: 0.01 }
+    { key: 'parallaxStrength', label: '视差强度', type: 'number', default: 0.06 }
   ],
   '视图': [
     { key: 'initialScale', label: '初始缩放', type: 'number', default: 0.95 }

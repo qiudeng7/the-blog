@@ -35,13 +35,14 @@ export function useD3Coordinate(
   let svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | null = null
   let mainGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
   let contentGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
+  let overlayGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
 
   // 视差效果 - 可通过 debug 面板调整
   const parallaxX = ref(0)
   const parallaxY = ref(0)
   const targetParallaxX = ref(0)
   const targetParallaxY = ref(0)
-  const parallaxStrength = ref(0.01)  // 视差强度
+  const parallaxStrength = ref(0.06)  // 视差强度
   let animationFrameId: number | null = null
 
   // 布局配置 - 可通过 debug 面板调整
@@ -240,11 +241,23 @@ export function useD3Coordinate(
     })
   }
 
+  // 更新覆盖层中节点的位置（响应缩放和平移）
+  function updateOverlayPositions(transform: d3.ZoomTransform): void {
+    if (!overlayGroup) return
+
+    overlayGroup.selectAll<SVGGElement, D3Point>('.point').attr('transform', function(d) {
+      // 应用缩放和平移变换到节点位置
+      const transformedX = d.x * transform.k + transform.x
+      const transformedY = d.y * transform.k + transform.y
+      return `translate(${transformedX - d.x}, ${transformedY - d.y})`
+    })
+  }
+
   // 绘制技术点
   function drawPoints(): void {
-    if (!contentGroup) return
+    if (!overlayGroup) return
 
-    const pointsGroup = contentGroup.append('g').attr('class', 'technology-points')
+    const pointsGroup = overlayGroup.append('g').attr('class', 'technology-points')
 
     technologies.value.forEach(tech => {
       const stage = developmentStages.find(s => s.id === tech.x_axis)
@@ -256,6 +269,18 @@ export function useD3Coordinate(
       const pointG = pointsGroup.append('g')
         .attr('class', `point point-${tech.title}`)
         .datum({ x, y, technology: tech, radius: pointRadius.value })
+
+      // 文本标签（在节点上方）
+      pointG.append('text')
+        .attr('class', 'point-label')
+        .attr('x', x)
+        .attr('y', y - pointRadius.value - 8)
+        .attr('text-anchor', 'middle')
+        .attr('fill', '#ffffff')
+        .attr('font-size', '14px')
+        .attr('font-weight', '500')
+        .attr('pointer-events', 'none')
+        .text(tech.title)
 
       // 外发光效果（默认隐藏）
       const glow = pointG.append('circle')
@@ -323,14 +348,14 @@ export function useD3Coordinate(
 
   // 更新点悬停状态
   function updatePointHover(techTitle: string | null): void {
-    if (!contentGroup) return
+    if (!overlayGroup) return
 
-    contentGroup.selectAll('.point').classed('hovered', function() {
+    overlayGroup.selectAll('.point').classed('hovered', function() {
       const data = d3.select(this).datum() as D3Point
       return data.technology.title === techTitle
     })
 
-    contentGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
+    overlayGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
       .attr('r', function() {
         const data = d3.select(this).datum() as D3Point
         return data.technology.title === techTitle ? pointRadius.value * 1.5 : pointRadius.value
@@ -344,7 +369,7 @@ export function useD3Coordinate(
         return data.technology.title === techTitle ? 3 : 2
       })
 
-    contentGroup.selectAll<SVGCircleElement, D3Point>('.point-glow')
+    overlayGroup.selectAll<SVGCircleElement, D3Point>('.point-glow')
       .style('opacity', function() {
         const data = d3.select(this).datum() as D3Point
         return data.technology.title === techTitle ? 1 : 0
@@ -353,12 +378,13 @@ export function useD3Coordinate(
 
   // 重新渲染
   function render(): void {
-    if (!contentGroup) return
+    if (!contentGroup || !overlayGroup) return
 
     console.log('Rendering coordinate system with', technologies.value.length, 'technologies')
 
     // 清除现有内容
     contentGroup.selectAll('*').remove()
+    overlayGroup.selectAll('*').remove()
 
     // 重新绘制
     drawAxes()
@@ -465,11 +491,14 @@ export function useD3Coordinate(
 
       const initialTransform = d3.zoomIdentity
         .translate(svgWidth.value / 2 - contentCenterX, svgHeight.value / 2 - contentCenterY)
+        .scale(initialScale.value)  // 应用初始缩放
 
       if (zoom && svgRef.value) {
         // 应用初始变换
         d3.select(svgRef.value)
           .call(zoom.transform, initialTransform)
+        // 更新覆盖层位置
+        updateOverlayPositions(initialTransform)
       }
     }
 
@@ -490,6 +519,9 @@ export function useD3Coordinate(
     // 创建内容组（用于视差效果）
     contentGroup = mainGroup.append('g')
 
+    // 创建覆盖层组（用于节点和文本，不受缩放影响）
+    overlayGroup = svg.append('g').attr('class', 'overlay-group')
+
     console.log('SVG groups created')
 
     // 设置缩放行为
@@ -500,6 +532,8 @@ export function useD3Coordinate(
           mainGroup.attr('transform', event.transform)
           // 更新缩放值
           currentZoom.value = event.transform.k
+          // 更新覆盖层中节点的位置
+          updateOverlayPositions(event.transform)
         }
       })
 
@@ -531,7 +565,7 @@ export function useD3Coordinate(
     // 监听重置事件
     window.addEventListener('debug-reset-params', () => {
       // 重置为默认值
-      parallaxStrength.value = 0.01
+      parallaxStrength.value = 0.06
       pointRadius.value = 12
       stageStep.value = 200
       depthStep.value = 150
