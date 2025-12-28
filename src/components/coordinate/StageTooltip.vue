@@ -163,7 +163,7 @@ defineExpose({
 }
 
 .tooltip-content {
-  background: #fafafa;
+  background: #1e293b;
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   max-width: 400px;
@@ -196,8 +196,8 @@ defineExpose({
 .tech-icon-container {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.05));
-  border: 2px solid rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -209,8 +209,8 @@ defineExpose({
 .tech-icon-container :deep(svg) {
   width: 48px;
   height: 48px;
-  color: #3b82f6;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* 内容区域 */
@@ -223,11 +223,11 @@ defineExpose({
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0 0 8px 0;
-  color: #1e293b;
+  color: #f1f5f9;
 }
 
 .tech-description {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 0.875rem;
   line-height: 1.5;
   margin: 0 0 16px 0;
@@ -242,7 +242,7 @@ defineExpose({
 
 .mastery-label {
   font-size: 0.875rem;
-  color: #64748b;
+  color: #94a3b8;
   white-space: nowrap;
 }
 
@@ -279,11 +279,11 @@ defineExpose({
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: var(--spacing-sm);
-  color: #1e293b;
+  color: #f1f5f9;
 }
 
 .tooltip-description {
-  color: #64748b;
+  color: #94a3b8;
   margin-bottom: var(--spacing-md);
   line-height: 1.6;
 }
@@ -296,7 +296,7 @@ defineExpose({
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: var(--spacing-xs);
-  color: #334155;
+  color: #cbd5e1;
 }
 
 .activity-list,
@@ -313,7 +313,7 @@ defineExpose({
   padding: var(--spacing-xs) 0;
   padding-left: var(--spacing-md);
   position: relative;
-  color: #64748b;
+  color: #94a3b8;
   font-size: 0.875rem;
   line-height: 1.5;
 }
@@ -324,7 +324,7 @@ defineExpose({
   content: '•';
   position: absolute;
   left: 0;
-  color: #3b82f6;
+  color: #60a5fa;
 }
 
 .tooltip-meta {
