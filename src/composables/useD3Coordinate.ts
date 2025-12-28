@@ -371,8 +371,8 @@ export function useD3Coordinate(
         .attr('y1', contentHeight.value + 20)
         .attr('x2', segmentX + segmentWidth)
         .attr('y2', contentHeight.value + 20)
-        .attr('stroke', 'rgba(255, 255, 255, 0.6)')
-        .attr('stroke-width', 4)
+        .attr('stroke', 'rgba(255, 255, 255, 0.2)')
+        .attr('stroke-width', 3)
         .attr('stroke-linecap', 'round')
 
       // 阶段标签 - 中文（上）
@@ -487,13 +487,16 @@ export function useD3Coordinate(
     })
 
     axisGroup.selectAll<SVGLineElement, typeof developmentStages[0]>('.stage-line')
+      .transition()
+      .duration(300)
+      .ease(d3.easeCubicOut)
       .attr('stroke', function() {
         const stage = d3.select(this).datum() as typeof developmentStages[0]
-        return stage.id === stageId ? '#ffffff' : 'rgba(255, 255, 255, 0.6)'
+        return stage.id === stageId ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.2)'
       })
       .attr('stroke-width', function() {
         const stage = d3.select(this).datum() as typeof developmentStages[0]
-        return stage.id === stageId ? 6 : 4
+        return stage.id === stageId ? 5 : 3
       })
 
     axisGroup.selectAll<SVGTextElement, typeof developmentStages[0]>('.stage-label-zh')
