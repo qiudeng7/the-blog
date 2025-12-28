@@ -114,7 +114,7 @@ onUnmounted(() => {
   }
 }
 
-/* 缩小淡出转场动画（倒放） */
+/* 缩小淡出转场动画 */
 .zoom-in-exit {
   animation: zoomOutFade 0.4s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
 }
@@ -125,7 +125,7 @@ onUnmounted(() => {
     opacity: 1;
   }
   100% {
-    transform: scale(3);
+    transform: scale(0.3);
     opacity: 0;
   }
 }
