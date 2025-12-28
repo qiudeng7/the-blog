@@ -48,6 +48,9 @@ function goBack() {
     containerRef.value.classList.add('zoom-in-exit')
   }
 
+  // 标记为从详情页返回
+  sessionStorage.setItem('returningFromDetail', 'true')
+
   // 延迟导航，等待动画完成
   setTimeout(() => {
     router.push({ name: 'SoftwareDevelopment' })

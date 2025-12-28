@@ -31,6 +31,13 @@ function handleNavigateToTechnology(event: CustomEvent) {
 
 onMounted(() => {
   window.addEventListener('navigate-to-technology', handleNavigateToTechnology as EventListener)
+
+  // 检查是否从详情页返回
+  const fromDetail = sessionStorage.getItem('returningFromDetail')
+  if (fromDetail && wrapperRef.value) {
+    wrapperRef.value.classList.add('fade-in-return')
+    sessionStorage.removeItem('returningFromDetail')
+  }
 })
 
 onUnmounted(() => {
@@ -62,6 +69,20 @@ onUnmounted(() => {
   100% {
     transform: scale(3);
     opacity: 0;
+  }
+}
+
+/* 淡入转场动画（从详情页返回） */
+.fade-in-return {
+  animation: fadeInReturn 0.4s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
+}
+
+@keyframes fadeInReturn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 </style>

@@ -54,8 +54,8 @@ function render() {
 
   // 绘制网格线（淡色）
   const gridSize = 50
-  const gridExtentX = Math.ceil(centerX / gridSize) * gridSize + gridSize
-  const gridExtentY = Math.ceil(centerY / gridSize) * gridSize + gridSize
+  const gridExtentX = Math.ceil(centerX / gridSize) * gridSize + gridSize * 10
+  const gridExtentY = Math.ceil(centerY / gridSize) * gridSize + gridSize * 10
 
   // 垂直网格线
   for (let x = -gridExtentX; x <= gridExtentX; x += gridSize) {
@@ -64,7 +64,7 @@ function render() {
       .attr('x1', centerX + x)
       .attr('y1', 0)
       .attr('x2', centerX + x)
-      .attr('y2', svgHeight.value)
+      .attr('y2', svgHeight.value * 10)
       .attr('stroke', 'rgba(255, 255, 255, 0.08)')
       .attr('stroke-width', 1)
   }
@@ -75,7 +75,7 @@ function render() {
       .attr('class', 'grid-line')
       .attr('x1', 0)
       .attr('y1', centerY + y)
-      .attr('x2', svgWidth.value)
+      .attr('x2', svgWidth.value * 10)
       .attr('y2', centerY + y)
       .attr('stroke', 'rgba(255, 255, 255, 0.08)')
       .attr('stroke-width', 1)
@@ -86,7 +86,7 @@ function render() {
     .attr('class', 'axis-x')
     .attr('x1', 0)
     .attr('y1', centerY)
-    .attr('x2', svgWidth.value)
+    .attr('x2', svgWidth.value * 10)
     .attr('y2', centerY)
     .attr('stroke', 'rgba(255, 255, 255, 0.3)')
     .attr('stroke-width', 2)
@@ -97,7 +97,7 @@ function render() {
     .attr('x1', centerX)
     .attr('y1', 0)
     .attr('x2', centerX)
-    .attr('y2', svgHeight.value)
+    .attr('y2', svgHeight.value * 10)
     .attr('stroke', 'rgba(255, 255, 255, 0.3)')
     .attr('stroke-width', 2)
 
