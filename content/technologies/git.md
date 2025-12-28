@@ -3,7 +3,7 @@ title: "Git"
 x_axis: "implementation"
 x_position: 2
 y_axis: 2
-mastery: 1.0
+mastery: 5
 tags: ["vcs", "tools", "collaboration"]
 description: "分布式版本控制系统"
 ---

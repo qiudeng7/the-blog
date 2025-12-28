@@ -3,7 +3,7 @@ title: "Vue.js"
 x_axis: "implementation"
 x_position: 3
 y_axis: 4
-mastery: 0.8
+mastery: 4
 tags: ["frontend", "framework", "javascript"]
 description: "渐进式 JavaScript 框架"
 ---
