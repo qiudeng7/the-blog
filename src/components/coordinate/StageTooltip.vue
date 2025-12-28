@@ -53,9 +53,17 @@
             <!-- 掌握程度 -->
             <div class="tech-mastery">
               <div class="mastery-label">掌握程度</div>
-              <div class="mastery-badge" :class="getMasteryClass(technology.mastery)">
-                <span class="mastery-text">{{ getMasteryLabel(technology.mastery) }}</span>
-                <div class="mastery-shine"></div>
+              <div class="mastery-stars">
+                <div
+                  v-for="index in getStarCount(technology.mastery)"
+                  :key="index"
+                  class="star-badge"
+                >
+                  <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                  <div class="star-shine"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -104,20 +112,9 @@ const renderedDetails = computed(() => {
   return html
 })
 
-// 获取掌握程度等级
-function getMasteryLabel(mastery: number): string {
-  if (mastery < 0.3) return '了解'
-  if (mastery < 0.6) return '掌握'
-  if (mastery < 0.85) return '熟练'
-  return '精通'
-}
-
-// 获取掌握程度样式类
-function getMasteryClass(mastery: number): string {
-  if (mastery < 0.3) return 'mastery-familiar'
-  if (mastery < 0.6) return 'mastery-skilled'
-  if (mastery < 0.85) return 'mastery-proficient'
-  return 'mastery-expert'
+// 获取星星数量（mastery 0.0-1.0 映射为 0-10颗星）
+function getStarCount(mastery: number): number {
+  return Math.round(mastery * 10)
 }
 
 // 获取默认图标
@@ -280,60 +277,58 @@ defineExpose({
   white-space: nowrap;
 }
 
-.mastery-badge {
+/* 星星容器 */
+.mastery-stars {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* 星星徽章 */
+.star-badge {
   position: relative;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  overflow: hidden;
-  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  display: flex;
   align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
-/* 掌握程度等级颜色 */
-.mastery-familiar {
-  background: linear-gradient(135deg, #6b7280, #4b5563);
+.star-icon {
+  width: 18px;
+  height: 18px;
   color: #ffffff;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  position: relative;
+  z-index: 1;
 }
 
-.mastery-skilled {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #ffffff;
-}
-
-.mastery-proficient {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #ffffff;
-}
-
-.mastery-expert {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #ffffff;
-}
-
-/* 掌握程度反光效果 */
-.mastery-shine {
+/* 星星反光效果 */
+.star-shine {
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
   background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 70%
   );
-  animation: masteryShine 2.5s ease-in-out infinite;
+  animation: starShine 3s ease-in-out infinite;
 }
 
-@keyframes masteryShine {
+@keyframes starShine {
   0% {
-    left: -100%;
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
   }
-  50%, 100% {
-    left: 150%;
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
   }
 }
 
