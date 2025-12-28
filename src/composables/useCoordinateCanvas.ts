@@ -46,6 +46,9 @@ export function useCoordinateCanvas(
   const parallaxStrength = 0.03  // 视差强度
   let animationFrameId: number | null = null
 
+  // 初始化标志
+  let isInitialized = false
+
   // 布局配置（世界坐标）
   const padding = { top: 100, right: 100, bottom: 150, left: 100 }
   const pointRadius = 12
@@ -430,6 +433,21 @@ export function useCoordinateCanvas(
 
     if (ctx.value) {
       ctx.value.scale(dpr, dpr)
+    }
+
+    // 初始化时将坐标系居中并偏上
+    if (!isInitialized) {
+      // 计算居中位置
+      const centeredX = (canvasWidth.value - contentWidth) / 2
+      const centeredY = (canvasHeight.value - contentHeight) / 2
+
+      // 向上偏移 20%
+      const upwardOffset = canvasHeight.value * 0.2
+
+      translateX.value = centeredX
+      translateY.value = centeredY - upwardOffset
+
+      isInitialized = true
     }
 
     draw()
