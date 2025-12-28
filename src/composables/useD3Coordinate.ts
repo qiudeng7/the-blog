@@ -152,16 +152,16 @@ export function useD3Coordinate(
       .attr('height', contentHeight.value + 20000)
       .attr('fill', '#000000')
 
-    // Y 轴水平网格线
+    // Y 轴水平网格线 - 向两侧无限延伸
     for (let i = 1; i <= yAxisMax; i++) {
       const y = getYPosition(i)
 
-      // 网格线 - 白色
+      // 网格线 - 白色，延伸很远以看起来无限
       contentGroup.append('line')
         .attr('class', 'grid-line-y')
-        .attr('x1', padding.left)
+        .attr('x1', -10000)
         .attr('y1', y)
-        .attr('x2', padding.left + contentWidth.value)
+        .attr('x2', contentWidth.value + 10000)
         .attr('y2', y)
         .attr('stroke', 'rgba(255, 255, 255, 0.15)')
         .attr('stroke-width', 1)
@@ -178,16 +178,16 @@ export function useD3Coordinate(
         .text(i.toString())
     }
 
-    // X 轴垂直网格线
+    // X 轴垂直网格线 - 向上下无限延伸
     for (let i = 0; i <= developmentStages.length; i++) {
       const x = padding.left + stageStep.value * i
 
       contentGroup.append('line')
         .attr('class', 'grid-line-x')
         .attr('x1', x)
-        .attr('y1', padding.top)
+        .attr('y1', -10000)
         .attr('x2', x)
-        .attr('y2', padding.top + contentHeight.value)
+        .attr('y2', contentHeight.value + 10000)
         .attr('stroke', 'rgba(255, 255, 255, 0.15)')
         .attr('stroke-width', 1)
     }
@@ -226,16 +226,26 @@ export function useD3Coordinate(
         .attr('stroke-width', 4)
         .attr('stroke-linecap', 'round')
 
-      // 阶段标签 - 白色
+      // 阶段标签 - 中文（上）
       stageG.append('text')
-        .attr('class', 'stage-label')
+        .attr('class', 'stage-label-zh')
         .attr('x', segmentX + segmentWidth / 2)
-        .attr('y', contentHeight.value + 60)
-        .attr('text-anchor', 'end')
+        .attr('y', contentHeight.value + 50)
+        .attr('text-anchor', 'middle')
         .attr('fill', '#ffffff')
-        .attr('font-size', '14px')
-        .attr('transform', `rotate(-30, ${segmentX + segmentWidth / 2}, ${contentHeight.value + 60})`)
+        .attr('font-size', '15px')
+        .attr('font-weight', '500')
         .text(stage.name)
+
+      // 阶段标签 - 英文（下）
+      stageG.append('text')
+        .attr('class', 'stage-label-en')
+        .attr('x', segmentX + segmentWidth / 2)
+        .attr('y', contentHeight.value + 72)
+        .attr('text-anchor', 'middle')
+        .attr('fill', 'rgba(255, 255, 255, 0.7)')
+        .attr('font-size', '13px')
+        .text(stage.nameEn)
     })
   }
 
@@ -325,10 +335,16 @@ export function useD3Coordinate(
         return stage.id === stageId ? 6 : 4
       })
 
-    contentGroup.selectAll<SVGTextElement, typeof developmentStages[0]>('.stage-label')
+    contentGroup.selectAll<SVGTextElement, typeof developmentStages[0]>('.stage-label-zh')
       .attr('fill', function() {
         const stage = d3.select(this).datum() as typeof developmentStages[0]
-        return stage.id === stageId ? '#ffffff' : 'rgba(255, 255, 255, 0.8)'
+        return stage.id === stageId ? '#ffffff' : 'rgba(255, 255, 255, 0.9)'
+      })
+
+    contentGroup.selectAll<SVGTextElement, typeof developmentStages[0]>('.stage-label-en')
+      .attr('fill', function() {
+        const stage = d3.select(this).datum() as typeof developmentStages[0]
+        return stage.id === stageId ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.6)'
       })
   }
 

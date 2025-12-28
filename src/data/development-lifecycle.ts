@@ -6,6 +6,7 @@
 export interface DevelopmentStage {
   id: string
   name: string
+  nameEn: string  // 英文名称
   order: number
   description: string
   activities: string[]
@@ -17,6 +18,7 @@ export const developmentStages: DevelopmentStage[] = [
   {
     id: 'exploration',
     name: '需求探索',
+    nameEn: 'Exploration',
     order: 1,
     description: '发现和定义商业机会，初步了解用户需求',
     activities: [
@@ -41,6 +43,7 @@ export const developmentStages: DevelopmentStage[] = [
   {
     id: 'requirements',
     name: '需求分析',
+    nameEn: 'Requirements',
     order: 2,
     description: '详细分析和定义系统需求和用户故事',
     activities: [
@@ -65,6 +68,7 @@ export const developmentStages: DevelopmentStage[] = [
   {
     id: 'architecture',
     name: '架构设计',
+    nameEn: 'Architecture',
     order: 3,
     description: '设计系统整体架构和技术选型',
     activities: [
@@ -90,6 +94,7 @@ export const developmentStages: DevelopmentStage[] = [
   {
     id: 'detailed-design',
     name: '详细设计',
+    nameEn: 'Detailed Design',
     order: 4,
     description: '设计模块接口、类和数据库结构',
     activities: [
@@ -115,6 +120,7 @@ export const developmentStages: DevelopmentStage[] = [
   {
     id: 'implementation',
     name: '编码实现',
+    nameEn: 'Implementation',
     order: 5,
     description: '编写代码实现系统功能',
     activities: [
@@ -140,6 +146,7 @@ export const developmentStages: DevelopmentStage[] = [
   {
     id: 'unit-testing',
     name: '单元测试',
+    nameEn: 'Unit Testing',
     order: 6,
     description: '对代码单元进行独立测试',
     activities: [
@@ -164,6 +171,7 @@ export const developmentStages: DevelopmentStage[] = [
   {
     id: 'integration-testing',
     name: '集成测试',
+    nameEn: 'Integration Testing',
     order: 7,
     description: '测试模块间的集成和系统功能',
     activities: [
@@ -188,6 +196,7 @@ export const developmentStages: DevelopmentStage[] = [
   {
     id: 'deployment',
     name: '部署发布',
+    nameEn: 'Deployment',
     order: 8,
     description: '将系统部署到生产环境',
     activities: [
@@ -214,6 +223,7 @@ export const developmentStages: DevelopmentStage[] = [
   {
     id: 'maintenance',
     name: '运维监控',
+    nameEn: 'Maintenance',
     order: 9,
     description: '监控系统运行状态和维护系统',
     activities: [
@@ -240,6 +250,7 @@ export const developmentStages: DevelopmentStage[] = [
   {
     id: 'termination',
     name: '项目终止',
+    nameEn: 'Termination',
     order: 10,
     description: '项目生命周期结束或系统下线',
     activities: [
