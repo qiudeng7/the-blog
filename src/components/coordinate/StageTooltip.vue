@@ -41,7 +41,11 @@
         <div v-else-if="technology" class="technology-tooltip">
           <!-- Icon区域 -->
           <div class="tech-icon-wrapper">
-            <div class="tech-icon-container" v-html="technology.icon || getDefaultIcon()"></div>
+            <div
+              class="tech-icon-container flip-animation"
+              :key="technology.title"
+              v-html="technology.icon || getDefaultIcon()"
+            ></div>
           </div>
 
           <!-- 内容区域 -->
@@ -200,8 +204,8 @@ defineExpose({
   position: relative;
 }
 
-/* Tooltip 显示时触发翻转动画 */
-.technology-tooltip:hover .tech-icon-container {
+/* Icon 翻转动画 */
+.tech-icon-container.flip-animation {
   animation: iconFlip 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
