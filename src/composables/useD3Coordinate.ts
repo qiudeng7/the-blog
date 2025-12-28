@@ -192,6 +192,38 @@ export function useD3Coordinate(
         .attr('stroke-width', 1)
     }
 
+    // 创建渐变定义（在绘制阶段之前）
+    const defs = svg!.select<SVGDefsElement>('defs') || svg!.append('defs')
+    const grayGradient = defs.append('linearGradient')
+      .attr('id', 'gray-gradient')
+      .attr('gradientUnits', 'userSpaceOnUse')
+      .attr('x1', -10000)
+      .attr('y1', 0)
+      .attr('x2', padding.left + stageStep.value)
+      .attr('y2', 0)
+
+    grayGradient.append('stop')
+      .attr('offset', 0)
+      .attr('stop-color', 'rgba(60, 60, 60, 0.5)')
+
+    grayGradient.append('stop')
+      .attr('offset', 0.7)
+      .attr('stop-color', 'rgba(40, 40, 40, 0.3)')
+
+    grayGradient.append('stop')
+      .attr('offset', 1)
+      .attr('stop-color', 'rgba(0, 0, 0, 0)')
+
+    // 添加灰色渐变矩形（在网格线之后，阶段之前）
+    contentGroup.insert('rect', ':first-child')
+      .attr('class', 'gray-background')
+      .attr('x', -10000)
+      .attr('y', -10000)
+      .attr('width', 10000 + padding.left + stageStep.value)
+      .attr('height', contentHeight.value + 20000)
+      .attr('fill', 'url(#gray-gradient)')
+      .attr('pointer-events', 'none')
+
     // Y 轴标题 - 白色，移到右侧
     contentGroup.append('text')
       .attr('class', 'y-axis-title')
@@ -214,41 +246,6 @@ export function useD3Coordinate(
       const stageG = stageGroup.append('g')
         .attr('class', `stage stage-${stage.id}`)
         .datum(stage)
-
-      // 为 requirements 阶段添加灰色渐变背景（从左到右：深灰 -> 黑）
-      if (stage.id === 'requirements') {
-        // 创建渐变定义
-        const defs = svg!.select<SVGDefsElement>('defs') || svg!.append('defs')
-        const gradient = defs.append('linearGradient')
-          .attr('id', 'gray-gradient')
-          .attr('gradientUnits', 'userSpaceOnUse')
-          .attr('x1', -10000)
-          .attr('y1', 0)
-          .attr('x2', x + stageStep.value)
-          .attr('y2', 0)
-
-        gradient.append('stop')
-          .attr('offset', 0)
-          .attr('stop-color', 'rgba(60, 60, 60, 0.5)')
-
-        gradient.append('stop')
-          .attr('offset', 0.7)
-          .attr('stop-color', 'rgba(40, 40, 40, 0.3)')
-
-        gradient.append('stop')
-          .attr('offset', 1)
-          .attr('stop-color', 'rgba(0, 0, 0, 0)')
-
-        // 添加渐变矩形覆盖从左侧无限远到当前阶段右边缘
-        stageG.append('rect')
-          .attr('class', 'stage-gray-background')
-          .attr('x', -10000)
-          .attr('y', -10000)
-          .attr('width', 10000 + x + stageStep.value)
-          .attr('height', contentHeight.value + 20000)
-          .attr('fill', 'url(#gray-gradient)')
-          .attr('pointer-events', 'none')
-      }
 
       // 阶段线段 - 白色
       stageG.append('line')
