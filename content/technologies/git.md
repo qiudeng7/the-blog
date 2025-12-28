@@ -1,6 +1,7 @@
 ---
 title: "Git"
 x_axis: "implementation"
+x_position: 2
 y_axis: 2
 mastery: 0.90
 tags: ["vcs", "tools", "collaboration"]

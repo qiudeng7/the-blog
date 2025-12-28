@@ -1,6 +1,6 @@
 /**
  * 软件开发生命周期阶段定义
- * X轴数据：10个主要阶段
+ * X轴数据：6个主要阶段
  */
 
 export interface DevelopmentStage {
@@ -45,34 +45,13 @@ export const developmentStages: DevelopmentStage[] = [
     name: '架构设计',
     nameEn: 'Architecture',
     order: 2,
-    description: '设计系统整体架构和技术选型',
+    description: '设计系统整体架构、模块接口和数据库结构',
     activities: [
       '系统架构设计',
       '技术选型',
       '架构评审',
       '非功能性需求分析',
-      '风险评估'
-    ],
-    deliverables: [
-      '架构设计文档(ADD)',
-      '技术选型报告',
-      '系统架构图',
-      '部署架构图',
-      '数据库设计文档'
-    ],
-    kpis: [
-      '架构可扩展性',
-      '性能可预测性',
-      '技术风险控制'
-    ]
-  },
-  {
-    id: 'detailed-design',
-    name: '详细设计',
-    nameEn: 'Detailed Design',
-    order: 3,
-    description: '设计模块接口、类和数据库结构',
-    activities: [
+      '风险评估',
       '模块设计',
       'API 接口设计',
       '数据库详细设计',
@@ -80,6 +59,11 @@ export const developmentStages: DevelopmentStage[] = [
       '时序图设计'
     ],
     deliverables: [
+      '架构设计文档(ADD)',
+      '技术选型报告',
+      '系统架构图',
+      '部署架构图',
+      '数据库设计文档',
       '详细设计文档(DDD)',
       'API 接口文档',
       '数据库 ER 图',
@@ -87,6 +71,9 @@ export const developmentStages: DevelopmentStage[] = [
       '测试计划'
     ],
     kpis: [
+      '架构可扩展性',
+      '性能可预测性',
+      '技术风险控制',
       '设计覆盖率',
       '接口一致性',
       '设计可维护性'
@@ -96,7 +83,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'implementation',
     name: '编码实现',
     nameEn: 'Implementation',
-    order: 4,
+    order: 3,
     description: '编写代码实现系统功能',
     activities: [
       '代码编写',
@@ -122,7 +109,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'testing',
     name: '测试',
     nameEn: 'Testing',
-    order: 5,
+    order: 4,
     description: '单元测试和集成测试，确保代码质量和系统集成',
     activities: [
       '单元测试编写与执行',
@@ -151,7 +138,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'deployment',
     name: '部署发布',
     nameEn: 'Deployment',
-    order: 6,
+    order: 5,
     description: '将系统部署到生产环境',
     activities: [
       '部署准备',
@@ -178,7 +165,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'maintenance',
     name: '运维监控',
     nameEn: 'Maintenance',
-    order: 7,
+    order: 6,
     description: '监控系统运行状态和维护系统',
     activities: [
       '系统监控',

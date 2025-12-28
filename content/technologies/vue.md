@@ -1,6 +1,7 @@
 ---
 title: "Vue.js"
 x_axis: "implementation"
+x_position: 3
 y_axis: 4
 mastery: 0.85
 tags: ["frontend", "framework", "javascript"]

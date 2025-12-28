@@ -64,14 +64,17 @@ import { ref, onMounted } from 'vue'
 // 参数定义（按分类组织）
 const paramDefinitions = {
   '交互效果': [
-    { key: 'parallaxStrength', label: '视差强度', type: 'number', default: 0.06 }
+    { key: 'parallaxStrength', label: '基础视差强度', type: 'number', default: 0.06 },
+    { key: 'bgParallaxMult', label: '背景视差系数', type: 'number', default: 0.5 },
+    { key: 'axisParallaxMult', label: '轴线视差系数', type: 'number', default: 0.75 },
+    { key: 'pointParallaxMult', label: '节点视差系数', type: 'number', default: 1.0 }
   ],
   '样式': [
-    { key: 'pointRadius', label: '点半径', type: 'number', default: 12 }
+    { key: 'pointRadius', label: '点半径', type: 'number', default: 9 }
   ],
   '布局': [
-    { key: 'stageStep', label: '阶段间距', type: 'number', default: 200 },
-    { key: 'depthStep', label: '深度间距', type: 'number', default: 150 }
+    { key: 'stageStep', label: '阶段间距', type: 'number', default: 300 },
+    { key: 'depthStep', label: '深度间距', type: 'number', default: 160 }
   ]
 }
 

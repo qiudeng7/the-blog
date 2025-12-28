@@ -1,6 +1,7 @@
 ---
 title: "Docker"
 x_axis: "deployment"
+x_position: 4
 y_axis: 3
 mastery: 0.75
 tags: ["devops", "containers", "deployment"]

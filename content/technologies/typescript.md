@@ -1,6 +1,7 @@
 ---
 title: "TypeScript"
 x_axis: "implementation"
+x_position: 7
 y_axis: 5
 mastery: 0.10
 tags: ["language", "javascript", "typing"]

@@ -32,22 +32,40 @@ export function useD3Coordinate(
   // D3 选择
   let svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | null = null
   let contentGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
+  let axisGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
   let overlayGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
   let overlayParallaxGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
 
-  // 视差效果 - 可通过 debug 面板调整
+  // 视差效果 - 递进强度
+  // 背景网格视差
+  const bgParallaxX = ref(0)
+  const bgParallaxY = ref(0)
+  const targetBgParallaxX = ref(0)
+  const targetBgParallaxY = ref(0)
+
+  // X轴视差
+  const axisParallaxX = ref(0)
+  const axisParallaxY = ref(0)
+  const targetAxisParallaxX = ref(0)
+  const targetAxisParallaxY = ref(0)
+
+  // 节点视差
   const parallaxX = ref(0)
   const parallaxY = ref(0)
   const targetParallaxX = ref(0)
   const targetParallaxY = ref(0)
-  const parallaxStrength = ref(0.06)  // 视差强度
+
+  const parallaxStrength = ref(0.06)  // 基础视差强度
+  const bgParallaxMult = ref(0.5)  // 背景视差系数
+  const axisParallaxMult = ref(0.75)  // 轴线视差系数
+  const pointParallaxMult = ref(1.0)  // 节点视差系数
   let animationFrameId: number | null = null
 
   // 布局配置 - 可通过 debug 面板调整
   const padding = { top: 100, right: 10, bottom: 150, left: 150 }
   const pointRadius = ref(9)
   const yAxisMax = 5
-  const stageStep = ref(230)
+  const stageStep = ref(300)
   const depthStep = ref(160)
 
   // 内容总尺寸 - 动态计算
@@ -68,8 +86,23 @@ export function useD3Coordinate(
   }
 
   // 获取 X 轴位置
-  function getXPosition(stageOrder: number): number {
-    return padding.left + stageStep.value * (stageOrder - 0.5)
+  function getXPosition(stageOrder: number, xPosition?: number): number {
+    const xPos = xPosition ?? 5  // 默认值为 5（中间位置）
+    const clampedXPos = Math.max(1, Math.min(10, xPos))  // 限制在 1-10 范围内
+
+    // 阶段的起始位置（阶段左边界）
+    const stageStartX = padding.left + stageStep.value * (stageOrder - 1)
+
+    // 阶段内可用宽度（使用 80% 的阶段宽度，留出 20% 的边距）
+    const stageUsableWidth = stageStep.value * 0.8
+
+    // 阶段内左边距（10% 的阶段宽度）
+    const stagePadding = stageStep.value * 0.1
+
+    // 将 1-10 的位置映射到可用宽度上
+    const positionInStage = ((clampedXPos - 1) / 9) * stageUsableWidth
+
+    return stageStartX + stagePadding + positionInStage
   }
 
   // 获取 Y 轴位置
@@ -77,27 +110,47 @@ export function useD3Coordinate(
     return padding.top + contentHeight.value - depth * depthStep.value
   }
 
-  // 平滑视差动画
+  // 平滑视差动画 - 递进效果
   function animateParallax(): void {
     const ease = 0.08
 
+    // 背景层视差（最弱）
+    bgParallaxX.value += (targetBgParallaxX.value - bgParallaxX.value) * ease
+    bgParallaxY.value += (targetBgParallaxY.value - bgParallaxY.value) * ease
+
+    // X轴层视差（中等）
+    axisParallaxX.value += (targetAxisParallaxX.value - axisParallaxX.value) * ease
+    axisParallaxY.value += (targetAxisParallaxY.value - axisParallaxY.value) * ease
+
+    // 节点层视差（最强）
     parallaxX.value += (targetParallaxX.value - parallaxX.value) * ease
     parallaxY.value += (targetParallaxY.value - parallaxY.value) * ease
 
-    // 应用视差偏移到内容组
+    // 应用视差偏移到背景层（网格线）
     if (contentGroup) {
-      contentGroup.attr('transform', `translate(${parallaxX.value},${parallaxY.value})`)
+      contentGroup.attr('transform', `translate(${bgParallaxX.value},${bgParallaxY.value})`)
     }
 
-    // 应用视差偏移到覆盖层视差组
+    // 应用视差偏移到X轴层
+    if (axisGroup) {
+      axisGroup.attr('transform', `translate(${axisParallaxX.value},${axisParallaxY.value})`)
+    }
+
+    // 应用视差偏移到节点层
     if (overlayParallaxGroup) {
       overlayParallaxGroup.attr('transform', `translate(${parallaxX.value},${parallaxY.value})`)
     }
 
-    if (
+    // 检查是否需要继续动画
+    const needsAnimation =
+      Math.abs(targetBgParallaxX.value - bgParallaxX.value) > 0.1 ||
+      Math.abs(targetBgParallaxY.value - bgParallaxY.value) > 0.1 ||
+      Math.abs(targetAxisParallaxX.value - axisParallaxX.value) > 0.1 ||
+      Math.abs(targetAxisParallaxY.value - axisParallaxY.value) > 0.1 ||
       Math.abs(targetParallaxX.value - parallaxX.value) > 0.1 ||
       Math.abs(targetParallaxY.value - parallaxY.value) > 0.1
-    ) {
+
+    if (needsAnimation) {
       animationFrameId = requestAnimationFrame(animateParallax)
     }
   }
@@ -106,6 +159,15 @@ export function useD3Coordinate(
   function applyDebugParams(params: Record<string, any>) {
     if (params.parallaxStrength !== undefined) {
       parallaxStrength.value = params.parallaxStrength
+    }
+    if (params.bgParallaxMult !== undefined) {
+      bgParallaxMult.value = params.bgParallaxMult
+    }
+    if (params.axisParallaxMult !== undefined) {
+      axisParallaxMult.value = params.axisParallaxMult
+    }
+    if (params.pointParallaxMult !== undefined) {
+      pointParallaxMult.value = params.pointParallaxMult
     }
     if (params.pointRadius !== undefined) {
       pointRadius.value = params.pointRadius
@@ -125,6 +187,9 @@ export function useD3Coordinate(
   function getCurrentParams() {
     return {
       parallaxStrength: parallaxStrength.value,
+      bgParallaxMult: bgParallaxMult.value,
+      axisParallaxMult: axisParallaxMult.value,
+      pointParallaxMult: pointParallaxMult.value,
       pointRadius: pointRadius.value,
       stageStep: stageStep.value,
       depthStep: depthStep.value
@@ -141,7 +206,7 @@ export function useD3Coordinate(
 
   // 绘制坐标轴
   function drawAxes(): void {
-    if (!contentGroup) return
+    if (!contentGroup || !axisGroup) return
 
     // 背景 - 黑色
     contentGroup.append('rect')
@@ -235,8 +300,8 @@ export function useD3Coordinate(
       .attr('transform', `rotate(-90, ${padding.left + contentWidth.value + 45}, ${contentHeight.value / 2})`)
       .text('抽象深度')
 
-    // X 轴阶段线段
-    const stageGroup = contentGroup.append('g').attr('class', 'x-axis-stages')
+    // X 轴阶段线段 - 绘制到 axisGroup（中等视差）
+    const stageGroup = axisGroup.append('g').attr('class', 'x-axis-stages')
 
     developmentStages.forEach((stage, index) => {
       const x = padding.left + stageStep.value * index
@@ -287,16 +352,28 @@ export function useD3Coordinate(
 
     const pointsGroup = overlayParallaxGroup.append('g').attr('class', 'technology-points')
 
-    technologies.value.forEach(tech => {
+    technologies.value.forEach((tech) => {
       const stage = developmentStages.find(s => s.id === tech.x_axis)
       if (!stage) return
 
-      const x = getXPosition(stage.order)
+      const x = getXPosition(stage.order, tech.x_position)
       const y = getYPosition(tech.y_axis)
+
+      // 为每个节点生成独特的呼吸浮动参数
+      const floatDuration = 3 + Math.random() * 2  // 3-5秒
+      const floatDelay = Math.random() * 2  // 0-2秒延迟
+      const floatDistance = 3 + Math.random() * 4  // 3-7px浮动距离
+      const breatheScale = 1.02 + Math.random() * 0.03  // 1.02-1.05缩放比例
 
       const pointG = pointsGroup.append('g')
         .attr('class', `point point-${tech.title}`)
         .datum({ x, y, technology: tech, radius: pointRadius.value })
+        .style('animation', `breathe-float ${floatDuration}s ease-in-out ${floatDelay}s infinite`)
+
+      // 将动画参数作为 CSS 变量存储
+      pointG
+        .style('--float-distance', `${floatDistance}px`)
+        .style('--breathe-scale', breatheScale)
 
       // 文本标签（在节点上方）
       pointG.append('text')
@@ -352,14 +429,14 @@ export function useD3Coordinate(
 
   // 更新阶段悬停状态
   function updateStageHover(stageId: string | null): void {
-    if (!contentGroup) return
+    if (!axisGroup) return
 
-    contentGroup.selectAll('.stage').classed('hovered', function() {
+    axisGroup.selectAll('.stage').classed('hovered', function() {
       const stage = d3.select(this).datum() as typeof developmentStages[0]
       return stage.id === stageId
     })
 
-    contentGroup.selectAll<SVGLineElement, typeof developmentStages[0]>('.stage-line')
+    axisGroup.selectAll<SVGLineElement, typeof developmentStages[0]>('.stage-line')
       .attr('stroke', function() {
         const stage = d3.select(this).datum() as typeof developmentStages[0]
         return stage.id === stageId ? '#ffffff' : 'rgba(255, 255, 255, 0.6)'
@@ -369,13 +446,13 @@ export function useD3Coordinate(
         return stage.id === stageId ? 6 : 4
       })
 
-    contentGroup.selectAll<SVGTextElement, typeof developmentStages[0]>('.stage-label-zh')
+    axisGroup.selectAll<SVGTextElement, typeof developmentStages[0]>('.stage-label-zh')
       .attr('fill', function() {
         const stage = d3.select(this).datum() as typeof developmentStages[0]
         return stage.id === stageId ? '#ffffff' : 'rgba(255, 255, 255, 0.9)'
       })
 
-    contentGroup.selectAll<SVGTextElement, typeof developmentStages[0]>('.stage-label-en')
+    axisGroup.selectAll<SVGTextElement, typeof developmentStages[0]>('.stage-label-en')
       .attr('fill', function() {
         const stage = d3.select(this).datum() as typeof developmentStages[0]
         return stage.id === stageId ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.6)'
@@ -392,6 +469,12 @@ export function useD3Coordinate(
     overlayParallaxGroup.selectAll('.point-circle').interrupt()
     overlayParallaxGroup.selectAll('.point-glow').interrupt()
     overlayParallaxGroup.selectAll('.point-label').interrupt()
+
+    // 控制呼吸动画：悬停时暂停，未悬停时继续
+    overlayParallaxGroup.selectAll('.point').style('animation-play-state', function() {
+      const data = d3.select(this).datum() as D3Point
+      return data.technology.title === techTitle ? 'paused' : 'running'
+    })
 
     overlayParallaxGroup.selectAll('.point').classed('hovered', function() {
       const data = d3.select(this).datum() as D3Point
@@ -531,19 +614,27 @@ export function useD3Coordinate(
     const mouseX = event.clientX - rect.left
     const mouseY = event.clientY - rect.top
 
-    // 计算视差偏移
+    // 计算多层视差偏移
     const centerX = svgWidth.value / 2
     const centerY = svgHeight.value / 2
+    const baseOffsetX = centerX - mouseX
+    const baseOffsetY = centerY - mouseY
 
-    targetParallaxX.value = (centerX - mouseX) * parallaxStrength.value
-    targetParallaxY.value = (centerY - mouseY) * parallaxStrength.value
+    // 背景层视差（使用 bgParallaxMult 系数）
+    targetBgParallaxX.value = baseOffsetX * parallaxStrength.value * bgParallaxMult.value
+    targetBgParallaxY.value = baseOffsetY * parallaxStrength.value * bgParallaxMult.value
+
+    // X轴层视差（使用 axisParallaxMult 系数）
+    targetAxisParallaxX.value = baseOffsetX * parallaxStrength.value * axisParallaxMult.value
+    targetAxisParallaxY.value = baseOffsetY * parallaxStrength.value * axisParallaxMult.value
+
+    // 节点层视差（使用 pointParallaxMult 系数）
+    targetParallaxX.value = baseOffsetX * parallaxStrength.value * pointParallaxMult.value
+    targetParallaxY.value = baseOffsetY * parallaxStrength.value * pointParallaxMult.value
 
     triggerParallax()
 
-    // 检测悬停 - 需要考虑视差偏移
-    // 节点因为视差效果移动了，视觉位置 = 原始位置 + parallax
-    // 鼠标在视觉位置上，要反向调整来匹配原始位置
-    // 使用目标值而不是当前值，因为动画可能还没完成
+    // 检测悬停 - 需要考虑节点层的视差偏移
     const adjustedMouseX = mouseX - targetParallaxX.value
     const adjustedMouseY = mouseY - targetParallaxY.value
 
@@ -553,7 +644,7 @@ export function useD3Coordinate(
       const stage = developmentStages.find(s => s.id === tech.x_axis)
       if (!stage) continue
 
-      const x = getXPosition(stage.order)
+      const x = getXPosition(stage.order, tech.x_position)
       const y = getYPosition(tech.y_axis)
       const distance = Math.sqrt((adjustedMouseX - x) ** 2 + (adjustedMouseY - y) ** 2)
 
@@ -598,6 +689,11 @@ export function useD3Coordinate(
     updatePointHover(null)
     updateStageHover(null)
 
+    // 重置所有层的视差
+    targetBgParallaxX.value = 0
+    targetBgParallaxY.value = 0
+    targetAxisParallaxX.value = 0
+    targetAxisParallaxY.value = 0
     targetParallaxX.value = 0
     targetParallaxY.value = 0
     triggerParallax()
@@ -630,13 +726,16 @@ export function useD3Coordinate(
 
     svg = d3.select(svgRef.value)
 
-    // 创建内容组（用于视差效果）
+    // 创建内容组（背景网格，视差最弱）
     contentGroup = svg.append('g')
+
+    // 创建X轴组（中等视差）
+    axisGroup = svg.append('g').attr('class', 'axis-group')
 
     // 创建覆盖层组（用于节点和文本，不受缩放影响）
     overlayGroup = svg.append('g').attr('class', 'overlay-group')
 
-    // 创建覆盖层视差组（用于节点和文本的视差效果）
+    // 创建覆盖层视差组（用于节点的最强视差效果）
     overlayParallaxGroup = overlayGroup.append('g').attr('class', 'overlay-parallax-group')
 
     console.log('SVG groups created')
@@ -668,8 +767,11 @@ export function useD3Coordinate(
     window.addEventListener('debug-reset-params', () => {
       // 重置为默认值
       parallaxStrength.value = 0.06
+      bgParallaxMult.value = 0.5
+      axisParallaxMult.value = 0.75
+      pointParallaxMult.value = 1.0
       pointRadius.value = 9
-      stageStep.value = 230
+      stageStep.value = 300
       depthStep.value = 160
       updateContentDimensions()
       render()

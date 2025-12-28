@@ -88,4 +88,20 @@ function handleMouseMove(event: MouseEvent) {
   -moz-user-select: none;
   -ms-user-select: none;
 }
+
+/* 节点呼吸浮动动画 */
+@keyframes breathe-float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(var(--float-distance, -5px)) scale(var(--breathe-scale, 1.03));
+  }
+}
+
+/* 为节点应用动画 */
+.point {
+  transform-origin: center center;
+  will-change: transform;
+}
 </style>
