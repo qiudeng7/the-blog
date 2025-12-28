@@ -142,11 +142,31 @@ watch(
 
 function position(event: MouseEvent) {
   const padding = 20
-  x.value = Math.min(event.clientX + padding, window.innerWidth - 320)
-  y.value = Math.min(event.clientY + padding, window.innerHeight - 400)
+  const tooltipWidth = 400
+  const tooltipHeight = 300
 
-  if (event.clientY > window.innerHeight / 2) {
-    y.value = Math.max(event.clientY - 300, padding)
+  // X 轴定位：优先显示在鼠标右侧，如果超出则显示在左侧
+  if (event.clientX + padding + tooltipWidth < window.innerWidth) {
+    // 右侧有足够空间
+    x.value = event.clientX + padding
+  } else if (event.clientX - padding - tooltipWidth > 0) {
+    // 左侧有足够空间
+    x.value = event.clientX - padding - tooltipWidth
+  } else {
+    // 两侧都不够，显示在左边界
+    x.value = padding
+  }
+
+  // Y 轴定位：优先显示在鼠标下方，如果超出则显示在上方
+  if (event.clientY + padding + tooltipHeight < window.innerHeight) {
+    // 下方有足够空间
+    y.value = event.clientY + padding
+  } else if (event.clientY - padding - tooltipHeight > 0) {
+    // 上方有足够空间
+    y.value = event.clientY - padding - tooltipHeight
+  } else {
+    // 上下都不够，显示在上边界
+    y.value = padding
   }
 }
 
