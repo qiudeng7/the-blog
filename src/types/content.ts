@@ -4,6 +4,7 @@
 
 export interface Technology {
   title: string
+  icon?: string         // SVG icon路径或内联SVG
   x_axis: string        // 对应开发生命周期阶段 ID
   x_position?: number   // 1-10, 在该阶段内的相对位置（从左到右），默认为 5
   y_axis: number        // 1-5, 抽象深度

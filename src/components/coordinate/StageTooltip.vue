@@ -39,32 +39,26 @@
         </div>
 
         <div v-else-if="technology" class="technology-tooltip">
-          <h3 class="tooltip-title">{{ technology.title }}</h3>
-          <p class="tooltip-description">{{ technology.description }}</p>
+          <!-- Icon区域 -->
+          <div class="tech-icon-wrapper">
+            <div class="tech-icon-container" v-html="technology.icon || getDefaultIcon()"></div>
+            <div class="tech-icon-shine"></div>
+          </div>
 
-          <div class="tooltip-meta">
-            <span class="meta-item">
-              <strong>掌握程度:</strong>
-              <div class="mastery-bar">
-                <div
-                  class="mastery-fill"
-                  :style="{ width: (technology.mastery * 100) + '%' }"
-                />
+          <!-- 内容区域 -->
+          <div class="tech-content">
+            <h3 class="tech-name">{{ technology.title }}</h3>
+            <p class="tech-description">{{ technology.description }}</p>
+
+            <!-- 掌握程度 -->
+            <div class="tech-mastery">
+              <div class="mastery-label">掌握程度</div>
+              <div class="mastery-badge" :class="getMasteryClass(technology.mastery)">
+                <span class="mastery-text">{{ getMasteryLabel(technology.mastery) }}</span>
+                <div class="mastery-shine"></div>
               </div>
-              {{ (technology.mastery * 100).toFixed(0) }}%
-            </span>
-            <span class="meta-item">
-              <strong>抽象深度:</strong> {{ technology.y_axis }}/5
-            </span>
+            </div>
           </div>
-
-          <div class="tooltip-tags">
-            <span v-for="tag in technology.tags" :key="tag" class="tag">
-              {{ tag }}
-            </span>
-          </div>
-
-          <div class="tooltip-details" v-html="renderedDetails"></div>
         </div>
       </div>
     </Transition>
@@ -110,6 +104,30 @@ const renderedDetails = computed(() => {
   return html
 })
 
+// 获取掌握程度等级
+function getMasteryLabel(mastery: number): string {
+  if (mastery < 0.3) return '了解'
+  if (mastery < 0.6) return '掌握'
+  if (mastery < 0.85) return '熟练'
+  return '精通'
+}
+
+// 获取掌握程度样式类
+function getMasteryClass(mastery: number): string {
+  if (mastery < 0.3) return 'mastery-familiar'
+  if (mastery < 0.6) return 'mastery-skilled'
+  if (mastery < 0.85) return 'mastery-proficient'
+  return 'mastery-expert'
+}
+
+// 获取默认图标
+function getDefaultIcon(): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 6v6l4 2"/>
+  </svg>`
+}
+
 watch(
   () => ({ stage: props.stage, technology: props.technology }),
   (newValue) => {
@@ -153,6 +171,173 @@ defineExpose({
   pointer-events: none;
 }
 
+/* 阶段 tooltip 样式保持不变 */
+.stage-tooltip {
+  /* 原有样式 */
+}
+
+/* 技术栈名片式 tooltip */
+.technology-tooltip {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+/* Icon 区域 */
+.tech-icon-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  perspective: 1000px;
+}
+
+.tech-icon-container {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: iconFlip 3s ease-in-out infinite;
+  position: relative;
+}
+
+.tech-icon-container :deep(svg) {
+  width: 48px;
+  height: 48px;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Icon 反光效果 */
+.tech-icon-shine {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 70%
+  );
+  animation: shineMove 3s ease-in-out infinite;
+}
+
+@keyframes iconFlip {
+  0%, 100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(180deg);
+  }
+}
+
+@keyframes shineMove {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+/* 内容区域 */
+.tech-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.tech-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+}
+
+.tech-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+/* 掌握程度 */
+.tech-mastery {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mastery-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+
+.mastery-badge {
+  position: relative;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 掌握程度等级颜色 */
+.mastery-familiar {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  color: #ffffff;
+}
+
+.mastery-skilled {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+}
+
+.mastery-proficient {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #ffffff;
+}
+
+.mastery-expert {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+}
+
+/* 掌握程度反光效果 */
+.mastery-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: masteryShine 2.5s ease-in-out infinite;
+}
+
+@keyframes masteryShine {
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 150%;
+  }
+}
+
+/* 原有样式保持 */
 .tooltip-title {
   font-size: 1.25rem;
   font-weight: 600;
