@@ -435,7 +435,7 @@ export function useCoordinateCanvas(
       ctx.value.scale(dpr, dpr)
     }
 
-    // 初始化时将坐标系居中并偏上
+    // 初始化时将坐标系居中
     if (!isInitialized) {
       // 内容的中心点（世界坐标）
       const contentCenterX = padding.left + contentWidth / 2
@@ -450,9 +450,6 @@ export function useCoordinateCanvas(
       // 所以：translateX = screenCenterX - contentCenterX * scale
       translateX.value = screenCenterX - contentCenterX * scale.value
       translateY.value = screenCenterY - contentCenterY * scale.value
-
-      // 向上偏移 10%（让坐标系偏上一点）
-      translateY.value -= canvasHeight.value * 0.1
 
       isInitialized = true
     }
