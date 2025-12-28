@@ -386,49 +386,126 @@ export function useD3Coordinate(
   function updatePointHover(techTitle: string | null): void {
     if (!overlayParallaxGroup) return
 
+    const duration = 300 // 动画时长 300ms
+
     overlayParallaxGroup.selectAll('.point').classed('hovered', function() {
       const data = d3.select(this).datum() as D3Point
       return data.technology.title === techTitle
     })
 
+    // 主点动画 - 缩放和边框
     overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
+      .transition()
+      .duration(duration)
+      .ease(d3.easeCubicOut)
       .attr('r', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? pointRadius.value * 1.6 : pointRadius.value
+        return data.technology.title === techTitle ? pointRadius.value * 1.8 : pointRadius.value
       })
       .attr('stroke', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? '#ffffff' : 'rgba(255, 255, 255, 0.6)'
+        if (data.technology.title === techTitle) {
+          return '#ffffff'
+        }
+        return techTitle ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.6)'
       })
       .attr('stroke-width', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? 2.5 : 1.5
+        return data.technology.title === techTitle ? 3 : 1.5
       })
       .style('filter', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle
-          ? 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.6))'
+        if (data.technology.title === techTitle) {
+          return 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 16px rgba(255, 255, 255, 0.4))'
+        }
+        return techTitle
+          ? 'drop-shadow(0 0 1px rgba(255, 255, 255, 0.1))'
           : 'drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))'
-      })
-
-    overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-glow')
-      .attr('r', function() {
-        const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? pointRadius.value * 3 : pointRadius.value * 2.5
       })
       .style('opacity', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? 0.8 : 0.3
+        return data.technology.title === techTitle ? 1 : (techTitle ? 0.5 : 1)
       })
 
+    // 外层光晕动画 - 脉冲效果
+    overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-glow')
+      .transition()
+      .duration(duration)
+      .ease(d3.easeCubicOut)
+      .attr('r', function() {
+        const data = d3.select(this).datum() as D3Point
+        return data.technology.title === techTitle ? pointRadius.value * 3.5 : pointRadius.value * 2.5
+      })
+      .style('opacity', function() {
+        const data = d3.select(this).datum() as D3Point
+        if (data.technology.title === techTitle) {
+          return 1
+        }
+        return techTitle ? 0.1 : 0.3
+      })
+
+    // 如果有悬停节点，添加脉冲动画
+    if (techTitle) {
+      overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
+        .filter(function() {
+          const data = d3.select(this).datum() as D3Point
+          return data.technology.title === techTitle
+        })
+        .transition()
+        .duration(1500)
+        .ease(d3.easeLinear)
+        .attr('stroke-width', 3)
+        .transition()
+        .duration(1500)
+        .ease(d3.easeLinear)
+        .attr('stroke-width', 2)
+        .on('end', function repeat() {
+          d3.select(this)
+            .transition()
+            .duration(1500)
+            .ease(d3.easeLinear)
+            .attr('stroke-width', 3)
+            .transition()
+            .duration(1500)
+            .ease(d3.easeLinear)
+            .attr('stroke-width', 2)
+            .on('end', repeat)
+        })
+    } else {
+      // 取消所有脉冲动画
+      overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
+        .interrupt()
+    }
+
+    // 标签动画
     overlayParallaxGroup.selectAll<SVGTextElement, D3Point>('.point-label')
+      .transition()
+      .duration(duration)
+      .ease(d3.easeCubicOut)
       .attr('fill', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? '#ffffff' : 'rgba(255, 255, 255, 0.9)'
+        if (data.technology.title === techTitle) {
+          return '#ffffff'
+        }
+        return techTitle ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.9)'
       })
       .attr('font-weight', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? '600' : '400'
+        return data.technology.title === techTitle ? '700' : '400'
+      })
+      .attr('font-size', function() {
+        const data = d3.select(this).datum() as D3Point
+        return data.technology.title === techTitle ? '15px' : '13px'
+      })
+      .style('text-shadow', function() {
+        const data = d3.select(this).datum() as D3Point
+        return data.technology.title === techTitle
+          ? '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)'
+          : 'none'
+      })
+      .style('opacity', function() {
+        const data = d3.select(this).datum() as D3Point
+        return data.technology.title === techTitle ? 1 : (techTitle ? 0.5 : 1)
       })
   }
 
