@@ -110,9 +110,9 @@ const renderedDetails = computed(() => {
   return html
 })
 
-// 获取星星数量（mastery 0.0-1.0 映射为 0-10颗星）
+// 获取星星数量（mastery 0.0-1.0 映射为 0-5颗星）
 function getStarCount(mastery: number): number {
-  return Math.round(mastery * 10)
+  return Math.round(mastery * 5)
 }
 
 // 获取默认图标

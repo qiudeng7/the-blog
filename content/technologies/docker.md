@@ -4,7 +4,7 @@ icon: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='current
 x_axis: "deployment"
 x_position: 4
 y_axis: 3
-mastery: 0.75
+mastery: 0.6
 tags: ["devops", "containers", "deployment"]
 description: "容器化平台"
 ---
