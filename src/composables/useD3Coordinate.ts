@@ -50,7 +50,7 @@ export function useD3Coordinate(
   const yAxisMax = 5
   const stageStep = ref(200)  // 改为 ref
   const depthStep = ref(150)  // 改为 ref
-  const initialScale = ref(1.0)  // 初始缩放比例
+  const initialScale = ref(0.95)  // 初始缩放比例
 
   // 内容总尺寸 - 动态计算
   const contentWidth = ref(developmentStages.length * stageStep.value)

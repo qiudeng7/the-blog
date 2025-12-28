@@ -64,10 +64,10 @@ import { ref, onMounted } from 'vue'
 // 参数定义（按分类组织）
 const paramDefinitions = {
   '交互效果': [
-    { key: 'parallaxStrength', label: '视差强度', type: 'number', default: 0.03 }
+    { key: 'parallaxStrength', label: '视差强度', type: 'number', default: 0.01 }
   ],
   '视图': [
-    { key: 'initialScale', label: '初始缩放', type: 'number', default: 1.0 }
+    { key: 'initialScale', label: '初始缩放', type: 'number', default: 0.95 }
   ],
   '样式': [
     { key: 'pointRadius', label: '点半径', type: 'number', default: 12 }
@@ -79,7 +79,7 @@ const paramDefinitions = {
 }
 
 // 状态
-const isCollapsed = ref(false)
+const isCollapsed = ref(true)
 const expandedCategories = ref<Set<string>>(new Set())
 const currentValues = ref<Record<string, any>>({})
 const tempValues = ref<Record<string, any>>({})
@@ -291,24 +291,26 @@ const paramGroups = paramDefinitions
 .param-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .param-label {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.7);
-  min-width: 60px;
+  min-width: 55px;
+  max-width: 55px;
   flex-shrink: 0;
 }
 
 .param-input {
   flex: 1;
+  min-width: 0;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
-  padding: 6px 8px;
+  padding: 4px 6px;
   color: #ffffff;
-  font-size: 12px;
+  font-size: 11px;
   font-family: inherit;
   transition: border-color 0.2s;
 }
