@@ -768,11 +768,17 @@ export function useD3Coordinate(
     svgWidth.value = container.clientWidth
     svgHeight.value = container.clientHeight
 
-    // 设置 SVG 尺寸并添加 viewBox 以实现居中
+    // 计算内容的实际边界（包括 padding）
+    const actualContentWidth = contentWidth.value + padding.left + padding.right
+    const actualContentHeight = contentHeight.value + padding.top + padding.bottom
+
+    // 设置 SVG 尺寸
     const svg = d3.select(svgRef.value)
     svg
       .attr('width', svgWidth.value)
       .attr('height', svgHeight.value)
+      .attr('viewBox', `0 -${padding.top} ${actualContentWidth} ${actualContentHeight}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet')
 
     render()
   }
