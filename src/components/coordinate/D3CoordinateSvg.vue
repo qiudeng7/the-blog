@@ -73,11 +73,11 @@ function handleMouseMove(event: MouseEvent) {
   margin: 0;
   padding: 0;
   /* CSS 变量控制的背景渐变 */
-  --bg-color-1: #1a0632;
-  --bg-color-2: #140426;
-  --bg-color-3: #0c021a;
-  --bg-color-4: #06020e;
-  --bg-color-5: #020108;
+  --bg-color-1: #1b2735;
+  --bg-color-2: #161e29;
+  --bg-color-3: #0f151c;
+  --bg-color-4: #0b0e14;
+  --bg-color-5: #090a0f;
   --glow-color-1: rgba(60, 80, 255, 0.08);
   --glow-color-2: rgba(40, 60, 200, 0.05);
 

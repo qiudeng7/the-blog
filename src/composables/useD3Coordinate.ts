@@ -237,9 +237,9 @@ export function useD3Coordinate(
   function getCurrentParams() {
     // 从 CSS 变量读取当前颜色值
     const container = document.querySelector('.d3-coordinate-container') as HTMLElement
-    const bgColor1 = container?.style.getPropertyValue('--bg-color-1') || '#1a0632'
-    const bgColor2 = container?.style.getPropertyValue('--bg-color-2') || '#140426'
-    const bgColor3 = container?.style.getPropertyValue('--bg-color-3') || '#0c021a'
+    const bgColor1 = container?.style.getPropertyValue('--bg-color-1') || '#1b2735'
+    const bgColor2 = container?.style.getPropertyValue('--bg-color-2') || '#161e29'
+    const bgColor3 = container?.style.getPropertyValue('--bg-color-3') || '#090a0f'
     const glowColor = container?.style.getPropertyValue('--glow-color-1') || 'rgba(60, 80, 255, 0.08)'
 
     return {
