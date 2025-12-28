@@ -62,7 +62,7 @@ export function useD3Coordinate(
   let animationFrameId: number | null = null
 
   // 布局配置 - 可通过 debug 面板调整
-  const padding = { top: 100, right: 10, bottom: 150, left: 150 }
+  const padding = { top: 100, right: 100, bottom: 150, left: 150 }
   const pointRadius = ref(9)
   const yAxisMax = 5
   const stageStep = ref(300)
@@ -772,12 +772,12 @@ export function useD3Coordinate(
     const actualContentWidth = contentWidth.value + padding.left + padding.right
     const actualContentHeight = contentHeight.value + padding.top + padding.bottom
 
-    // 设置 SVG 尺寸
+    // 设置 SVG 尺寸，添加 viewBox 实现自动缩放和居中
     const svg = d3.select(svgRef.value)
     svg
       .attr('width', svgWidth.value)
       .attr('height', svgHeight.value)
-      .attr('viewBox', `0 -${padding.top} ${actualContentWidth} ${actualContentHeight}`)
+      .attr('viewBox', `${50} -${padding.top} ${actualContentWidth} ${actualContentHeight}`)
       .attr('preserveAspectRatio', 'xMidYMid meet')
 
     render()
