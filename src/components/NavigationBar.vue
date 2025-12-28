@@ -52,7 +52,7 @@
 
 .nav-item.active {
   background: var(--color-accent);
-  box-shadow: 0 4px 12px rgba(36, 107, 100, 0.4);
+  box-shadow: 0 4px 12px var(--theme-accent-glow);
 }
 
 .nav-icon {

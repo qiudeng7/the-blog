@@ -4,8 +4,8 @@
   --color-bg-secondary: #1e293b;
   --color-text-primary: #f1f5f9;
   --color-text-secondary: #94a3b8;
-  --color-accent: #246B64;
-  --color-accent-hover: #1d5650;
+  --color-accent: var(--theme-accent);
+  --color-accent-hover: var(--theme-accent-hover);
   --color-border: #334155;
 
   /* Mastery Gradient (Light to Dark) */

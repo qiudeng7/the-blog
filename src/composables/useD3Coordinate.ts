@@ -185,22 +185,22 @@ export function useD3Coordinate(
     // 处理颜色参数 - 更新 CSS 变量
     const container = document.querySelector('.d3-coordinate-container') as HTMLElement
     if (container) {
-      if (params.bgColor1 !== undefined) {
-        container.style.setProperty('--bg-color-1', params.bgColor1)
+      if (params.themeBgColor1 !== undefined) {
+        container.style.setProperty('--theme-bg-color-1', params.themeBgColor1)
       }
-      if (params.bgColor2 !== undefined) {
-        container.style.setProperty('--bg-color-2', params.bgColor2)
+      if (params.themeBgColor2 !== undefined) {
+        container.style.setProperty('--theme-bg-color-2', params.themeBgColor2)
       }
-      if (params.bgColor3 !== undefined) {
-        container.style.setProperty('--bg-color-3', params.bgColor3)
-        container.style.setProperty('--bg-color-4', adjustBrightness(params.bgColor3, 0.5))
-        container.style.setProperty('--bg-color-5', adjustBrightness(params.bgColor3, 0.25))
+      if (params.themeBgColor3 !== undefined) {
+        container.style.setProperty('--theme-bg-color-3', params.themeBgColor3)
+        container.style.setProperty('--theme-bg-color-4', adjustBrightness(params.themeBgColor3, 0.5))
+        container.style.setProperty('--theme-bg-color-5', adjustBrightness(params.themeBgColor3, 0.25))
       }
-      if (params.glowColor !== undefined) {
-        const color = params.glowColor
+      if (params.themeGlowColor !== undefined) {
+        const color = params.themeGlowColor
         // 解析 rgba 并调整透明度
-        container.style.setProperty('--glow-color-1', color)
-        container.style.setProperty('--glow-color-2', adjustRgbaOpacity(color, 0.6))
+        container.style.setProperty('--theme-glow-color-1', color)
+        container.style.setProperty('--theme-glow-color-2', adjustRgbaOpacity(color, 0.6))
       }
     }
 
@@ -237,10 +237,11 @@ export function useD3Coordinate(
   function getCurrentParams() {
     // 从 CSS 变量读取当前颜色值
     const container = document.querySelector('.d3-coordinate-container') as HTMLElement
-    const bgColor1 = container?.style.getPropertyValue('--bg-color-1') || '#1a2a28'
-    const bgColor2 = container?.style.getPropertyValue('--bg-color-2') || '#15221f'
-    const bgColor3 = container?.style.getPropertyValue('--bg-color-3') || '#070a0c'
-    const glowColor = container?.style.getPropertyValue('--glow-color-1') || 'rgba(36, 107, 100, 0.08)'
+    const computedStyle = container ? getComputedStyle(container) : null
+    const bgColor1 = computedStyle?.getPropertyValue('--theme-bg-color-1').trim() || '#1a2a28'
+    const bgColor2 = computedStyle?.getPropertyValue('--theme-bg-color-2').trim() || '#15221f'
+    const bgColor3 = computedStyle?.getPropertyValue('--theme-bg-color-3').trim() || '#070a0c'
+    const glowColor = computedStyle?.getPropertyValue('--theme-glow-color-1').trim() || 'rgba(36, 107, 100, 0.08)'
 
     return {
       parallaxStrength: parallaxStrength.value,
@@ -250,10 +251,10 @@ export function useD3Coordinate(
       pointRadius: pointRadius.value,
       stageStep: stageStep.value,
       depthStep: depthStep.value,
-      bgColor1,
-      bgColor2,
-      bgColor3,
-      glowColor
+      themeBgColor1: bgColor1,
+      themeBgColor2: bgColor2,
+      themeBgColor3: bgColor3,
+      themeGlowColor: glowColor
     }
   }
 

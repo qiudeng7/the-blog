@@ -73,24 +73,16 @@ function handleMouseMove(event: MouseEvent) {
   margin: 0;
   padding: 0;
   /* CSS 变量控制的背景渐变 */
-  --bg-color-1: #1a2a28;
-  --bg-color-2: #15221f;
-  --bg-color-3: #0f1a1e;
-  --bg-color-4: #0b1215;
-  --bg-color-5: #070a0c;
-  --glow-color-1: rgba(36, 107, 100, 0.08);
-  --glow-color-2: rgba(36, 107, 100, 0.04);
-
   background: radial-gradient(circle at 50% 50%,
-    var(--bg-color-1) 0%,
-    var(--bg-color-2) 25%,
-    var(--bg-color-3) 50%,
-    var(--bg-color-4) 75%,
-    var(--bg-color-5) 100%
+    var(--theme-bg-color-1) 0%,
+    var(--theme-bg-color-2) 25%,
+    var(--theme-bg-color-3) 50%,
+    var(--theme-bg-color-4) 75%,
+    var(--theme-bg-color-5) 100%
   );
 }
 
-/* Glow overlay for blue-black ambient light */
+/* Glow overlay for ambient light */
 .d3-coordinate-container::before {
   content: '';
   position: absolute;
@@ -99,8 +91,8 @@ function handleMouseMove(event: MouseEvent) {
   right: 0;
   bottom: 0;
   background: radial-gradient(circle at 50% 50%,
-    var(--glow-color-1) 0%,
-    var(--glow-color-2) 40%,
+    var(--theme-glow-color-1) 0%,
+    var(--theme-glow-color-2) 40%,
     transparent 70%);
   mix-blend-mode: screen;
   pointer-events: none;

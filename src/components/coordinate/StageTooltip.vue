@@ -163,7 +163,7 @@ defineExpose({
 }
 
 .tooltip-content {
-  background: #1a2625;
+  background: var(--theme-tooltip-bg);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   max-width: 400px;
@@ -324,7 +324,7 @@ defineExpose({
   content: '•';
   position: absolute;
   left: 0;
-  color: #246B64;
+  color: var(--theme-bullet-color);
 }
 
 .tooltip-meta {

@@ -1,0 +1,49 @@
+/* 主题系统 - 青绿色系和蓝色系 */
+
+/* 默认值（低优先级） */
+:where(:root) {
+  --theme-accent: #246B64;
+  --theme-accent-hover: #1d5650;
+  --theme-accent-glow: rgba(36, 107, 100, 0.4);
+  --theme-bg-color-1: #1a2a28;
+  --theme-bg-color-2: #15221f;
+  --theme-bg-color-3: #0f1a1e;
+  --theme-bg-color-4: #0b1215;
+  --theme-bg-color-5: #070a0c;
+  --theme-glow-color-1: rgba(36, 107, 100, 0.08);
+  --theme-glow-color-2: rgba(36, 107, 100, 0.04);
+  --theme-tooltip-bg: #1a2625;
+  --theme-bullet-color: #246B64;
+}
+
+/* 青绿色系主题 */
+html.theme-teal {
+  --theme-accent: #246B64;
+  --theme-accent-hover: #1d5650;
+  --theme-accent-glow: rgba(36, 107, 100, 0.4);
+  --theme-bg-color-1: #1a2a28;
+  --theme-bg-color-2: #15221f;
+  --theme-bg-color-3: #0f1a1e;
+  --theme-bg-color-4: #0b1215;
+  --theme-bg-color-5: #070a0c;
+  --theme-glow-color-1: rgba(36, 107, 100, 0.08);
+  --theme-glow-color-2: rgba(36, 107, 100, 0.04);
+  --theme-tooltip-bg: #1a2625;
+  --theme-bullet-color: #246B64;
+}
+
+/* 蓝色系主题 */
+html.theme-blue {
+  --theme-accent: #3b82f6;
+  --theme-accent-hover: #2563eb;
+  --theme-accent-glow: rgba(59, 130, 246, 0.4);
+  --theme-bg-color-1: #1b2735;
+  --theme-bg-color-2: #161e29;
+  --theme-bg-color-3: #0f151c;
+  --theme-bg-color-4: #0b0e14;
+  --theme-bg-color-5: #090a0f;
+  --theme-glow-color-1: rgba(60, 80, 255, 0.08);
+  --theme-glow-color-2: rgba(40, 60, 200, 0.05);
+  --theme-tooltip-bg: #1e293b;
+  --theme-bullet-color: #60a5fa;
+}

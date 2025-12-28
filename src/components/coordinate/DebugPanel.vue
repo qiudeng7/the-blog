@@ -6,6 +6,33 @@
     </div>
 
     <div v-if="!isCollapsed" class="debug-content">
+      <!-- 主题切换 -->
+      <div class="theme-selector">
+        <div class="selector-title">主题</div>
+        <div class="theme-options">
+          <label class="theme-option">
+            <input
+              type="radio"
+              name="theme"
+              value="teal"
+              :checked="currentTheme === 'teal'"
+              @change="changeTheme('teal')"
+            />
+            <span class="theme-label">青绿色系</span>
+          </label>
+          <label class="theme-option">
+            <input
+              type="radio"
+              name="theme"
+              value="blue"
+              :checked="currentTheme === 'blue'"
+              @change="changeTheme('blue')"
+            />
+            <span class="theme-label">蓝色系</span>
+          </label>
+        </div>
+      </div>
+
       <!-- 参数树（可折叠，直接编辑） -->
       <div class="param-tree">
         <div
@@ -61,6 +88,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
+// 主题状态
+const currentTheme = ref<'teal' | 'blue'>('teal')
+
 // 参数定义（按分类组织）
 const paramDefinitions = {
   '交互效果': [
@@ -73,10 +103,10 @@ const paramDefinitions = {
     { key: 'pointRadius', label: '点半径', type: 'number', default: 9 }
   ],
   '颜色': [
-    { key: 'bgColor1', label: '背景色1(中心)', type: 'text', default: '#1a2a28' },
-    { key: 'bgColor2', label: '背景色2(中)', type: 'text', default: '#15221f' },
-    { key: 'bgColor3', label: '背景色3(边缘)', type: 'text', default: '#070a0c' },
-    { key: 'glowColor', label: '光晕颜色', type: 'text', default: 'rgba(36, 107, 100, 0.08)' }
+    { key: 'themeBgColor1', label: '背景色1(中心)', type: 'text', default: '#1a2a28' },
+    { key: 'themeBgColor2', label: '背景色2(中)', type: 'text', default: '#15221f' },
+    { key: 'themeBgColor3', label: '背景色3(边缘)', type: 'text', default: '#070a0c' },
+    { key: 'themeGlowColor', label: '光晕颜色', type: 'text', default: 'rgba(36, 107, 100, 0.08)' }
   ],
   '布局': [
     { key: 'stageStep', label: '阶段间距', type: 'number', default: 300 },
@@ -91,6 +121,13 @@ const currentValues = ref<Record<string, any>>({})
 const tempValues = ref<Record<string, any>>({})
 
 onMounted(() => {
+  // 初始化主题
+  const savedTheme = localStorage.getItem('theme') as 'teal' | 'blue' | null
+  if (savedTheme) {
+    currentTheme.value = savedTheme
+    applyTheme(savedTheme)
+  }
+
   // 默认展开所有分类
   Object.keys(paramDefinitions).forEach(category => {
     expandedCategories.value.add(category)
@@ -114,6 +151,22 @@ onMounted(() => {
 // 切换折叠状态
 function toggleCollapse() {
   isCollapsed.value = !isCollapsed.value
+}
+
+// 切换主题
+function changeTheme(theme: 'teal' | 'blue') {
+  currentTheme.value = theme
+  applyTheme(theme)
+  localStorage.setItem('theme', theme)
+}
+
+// 应用主题
+function applyTheme(theme: 'teal' | 'blue') {
+  const html = document.documentElement
+  // 移除所有主题类
+  html.classList.remove('theme-teal', 'theme-blue')
+  // 添加选中的主题类
+  html.classList.add(`theme-${theme}`)
 }
 
 // 切换分类展开/折叠
@@ -234,6 +287,49 @@ const paramGroups = paramDefinitions
   padding: 12px;
   max-height: 400px;
   overflow-y: auto;
+}
+
+/* 主题选择器 */
+.theme-selector {
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.selector-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 8px;
+}
+
+.theme-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.theme-option input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--color-accent, #246B64);
+}
+
+.theme-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  user-select: none;
 }
 
 /* 参数树 */
