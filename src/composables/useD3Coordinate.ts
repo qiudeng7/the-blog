@@ -420,6 +420,14 @@ export function useD3Coordinate(
       const pointG = pointsGroup.append('g')
         .attr('class', `point point-${tech.title}`)
         .datum({ x, y, technology: tech, radius: pointRadius.value })
+        .style('cursor', 'pointer')
+        .on('click', (event: MouseEvent) => {
+          event.stopPropagation()
+          // 触发导航到详情页
+          window.dispatchEvent(new CustomEvent('navigate-to-technology', {
+            detail: { technology: tech }
+          }))
+        })
 
       // 文本标签（在节点上方）
       pointG.append('text')
