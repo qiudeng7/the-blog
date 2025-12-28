@@ -41,7 +41,7 @@ export function useD3Coordinate(
   const parallaxY = ref(0)
   const targetParallaxX = ref(0)
   const targetParallaxY = ref(0)
-  const parallaxStrength = ref(0.03)  // 改回 0.03
+  const parallaxStrength = ref(0.01)  // 视差强度
   let animationFrameId: number | null = null
 
   // 布局配置 - 可通过 debug 面板调整
@@ -524,11 +524,11 @@ export function useD3Coordinate(
     // 监听重置事件
     window.addEventListener('debug-reset-params', () => {
       // 重置为默认值
-      parallaxStrength.value = 0.03
+      parallaxStrength.value = 0.01
       pointRadius.value = 12
       stageStep.value = 200
       depthStep.value = 150
-      initialScale.value = 1.0
+      initialScale.value = 0.95
       updateContentDimensions()
       render()
 
