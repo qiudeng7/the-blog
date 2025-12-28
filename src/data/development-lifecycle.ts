@@ -16,35 +16,10 @@ export interface DevelopmentStage {
 
 export const developmentStages: DevelopmentStage[] = [
   {
-    id: 'exploration',
-    name: '需求探索',
-    nameEn: 'Exploration',
-    order: 1,
-    description: '发现和定义商业机会，初步了解用户需求',
-    activities: [
-      '市场调研',
-      '用户访谈',
-      '竞品分析',
-      '可行性评估',
-      '商业价值分析'
-    ],
-    deliverables: [
-      '市场需求文档',
-      '机会分析报告',
-      '初步预算估算',
-      '项目建议书'
-    ],
-    kpis: [
-      '机会识别准确率',
-      '调研覆盖率',
-      '需求理解深度'
-    ]
-  },
-  {
     id: 'requirements',
     name: '需求分析',
     nameEn: 'Requirements',
-    order: 2,
+    order: 1,
     description: '详细分析和定义系统需求和用户故事',
     activities: [
       '需求收集',
@@ -69,7 +44,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'architecture',
     name: '架构设计',
     nameEn: 'Architecture',
-    order: 3,
+    order: 2,
     description: '设计系统整体架构和技术选型',
     activities: [
       '系统架构设计',
@@ -95,7 +70,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'detailed-design',
     name: '详细设计',
     nameEn: 'Detailed Design',
-    order: 4,
+    order: 3,
     description: '设计模块接口、类和数据库结构',
     activities: [
       '模块设计',
@@ -121,7 +96,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'implementation',
     name: '编码实现',
     nameEn: 'Implementation',
-    order: 5,
+    order: 4,
     description: '编写代码实现系统功能',
     activities: [
       '代码编写',
@@ -147,7 +122,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'unit-testing',
     name: '单元测试',
     nameEn: 'Unit Testing',
-    order: 6,
+    order: 5,
     description: '对代码单元进行独立测试',
     activities: [
       '测试用例设计',
@@ -172,7 +147,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'integration-testing',
     name: '集成测试',
     nameEn: 'Integration Testing',
-    order: 7,
+    order: 6,
     description: '测试模块间的集成和系统功能',
     activities: [
       '集成测试用例设计',
@@ -197,7 +172,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'deployment',
     name: '部署发布',
     nameEn: 'Deployment',
-    order: 8,
+    order: 7,
     description: '将系统部署到生产环境',
     activities: [
       '部署准备',
@@ -224,7 +199,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'maintenance',
     name: '运维监控',
     nameEn: 'Maintenance',
-    order: 9,
+    order: 8,
     description: '监控系统运行状态和维护系统',
     activities: [
       '系统监控',
@@ -245,33 +220,6 @@ export const developmentStages: DevelopmentStage[] = [
       '平均响应时间',
       '故障恢复时间',
       '资源利用率'
-    ]
-  },
-  {
-    id: 'termination',
-    name: '项目终止',
-    nameEn: 'Termination',
-    order: 10,
-    description: '项目生命周期结束或系统下线',
-    activities: [
-      '项目总结',
-      '经验归档',
-      '数据归档',
-      '资源释放',
-      '知识转移'
-    ],
-    deliverables: [
-      '项目总结报告',
-      '经验教训文档',
-      '归档数据',
-      '知识库文档',
-      '资产处置报告'
-    ],
-    kpis: [
-      '知识沉淀率',
-      '资源回收率',
-      '项目成功率',
-      '团队成长度'
     ]
   }
 ]

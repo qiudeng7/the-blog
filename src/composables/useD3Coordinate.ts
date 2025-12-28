@@ -166,12 +166,12 @@ export function useD3Coordinate(
         .attr('stroke', 'rgba(255, 255, 255, 0.15)')
         .attr('stroke-width', 1)
 
-      // Y 轴标签 - 白色
+      // Y 轴标签 - 白色，移到右侧
       contentGroup.append('text')
         .attr('class', 'y-axis-label')
-        .attr('x', padding.left - 20)
+        .attr('x', padding.left + contentWidth.value + 20)
         .attr('y', y)
-        .attr('text-anchor', 'end')
+        .attr('text-anchor', 'start')
         .attr('dominant-baseline', 'middle')
         .attr('fill', '#ffffff')
         .attr('font-size', '16px')
@@ -192,15 +192,15 @@ export function useD3Coordinate(
         .attr('stroke-width', 1)
     }
 
-    // Y 轴标题 - 白色
+    // Y 轴标题 - 白色，移到右侧
     contentGroup.append('text')
       .attr('class', 'y-axis-title')
-      .attr('x', 50)
+      .attr('x', padding.left + contentWidth.value + 60)
       .attr('y', contentHeight.value / 2)
       .attr('text-anchor', 'middle')
       .attr('fill', '#ffffff')
       .attr('font-size', '20px')
-      .attr('transform', `rotate(-90, 50, ${contentHeight.value / 2})`)
+      .attr('transform', `rotate(-90, ${padding.left + contentWidth.value + 60}, ${contentHeight.value / 2})`)
       .text('抽象深度')
 
     // X 轴阶段线段
@@ -214,6 +214,37 @@ export function useD3Coordinate(
       const stageG = stageGroup.append('g')
         .attr('class', `stage stage-${stage.id}`)
         .datum(stage)
+
+      // 为 requirements 阶段添加灰色渐变背景（从左到右：深灰 -> 黑）
+      if (stage.id === 'requirements') {
+        // 创建渐变定义
+        const defs = svg!.select<SVGDefsElement>('defs') || svg!.append('defs')
+        const gradient = defs.append('linearGradient')
+          .attr('id', 'gray-gradient')
+          .attr('x1', '0%')
+          .attr('y1', '0%')
+          .attr('x2', '100%')
+          .attr('y2', '0%')
+
+        gradient.append('stop')
+          .attr('offset', '0%')
+          .attr('stop-color', 'rgba(80, 80, 80, 0.4)')
+
+        gradient.append('stop')
+          .attr('offset', '100%')
+          .attr('stop-color', 'rgba(0, 0, 0, 0)')
+
+        // 添加渐变矩形覆盖整个阶段区域
+        stageG.append('rect')
+          .attr('class', 'stage-gray-background')
+          .attr('x', x)
+          .attr('y', 0)
+          .attr('width', stageStep.value)
+          .attr('height', contentHeight.value)
+          .attr('fill', 'url(#gray-gradient)')
+          .attr('pointer-events', 'none')
+          .style('opacity', 0.8)
+      }
 
       // 阶段线段 - 白色
       stageG.append('line')
