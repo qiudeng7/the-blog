@@ -47,8 +47,8 @@ export function useD3Coordinate(
   const padding = { top: 100, right: 10, bottom: 150, left: 150 }
   const pointRadius = ref(12)
   const yAxisMax = 5
-  const stageStep = ref(200)
-  const depthStep = ref(150)
+  const stageStep = ref(230)
+  const depthStep = ref(160)
 
   // 内容总尺寸 - 动态计算
   const contentWidth = ref(developmentStages.length * stageStep.value)
@@ -573,8 +573,8 @@ export function useD3Coordinate(
       // 重置为默认值
       parallaxStrength.value = 0.06
       pointRadius.value = 12
-      stageStep.value = 200
-      depthStep.value = 150
+      stageStep.value = 230
+      depthStep.value = 160
       updateContentDimensions()
       render()
 
