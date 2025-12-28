@@ -100,18 +100,16 @@ onUnmounted(() => {
   z-index: 0;
 }
 
-/* 缩小淡入转场动画 */
+/* 淡入转场动画 */
 .zoom-in-enter {
-  animation: zoomInFade 0.4s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
+  animation: fadeIn 0.4s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
 }
 
-@keyframes zoomInFade {
+@keyframes fadeIn {
   0% {
-    transform: scale(3);
     opacity: 0;
   }
   100% {
-    transform: scale(1);
     opacity: 1;
   }
 }
