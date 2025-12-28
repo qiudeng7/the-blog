@@ -44,7 +44,7 @@ export function useD3Coordinate(
   let animationFrameId: number | null = null
 
   // 布局配置 - 可通过 debug 面板调整
-  const padding = { top: 100, right: 100, bottom: 150, left: 100 }
+  const padding = { top: 100, right: 30, bottom: 150, left: 100 }
   const pointRadius = ref(12)
   const yAxisMax = 5
   const stageStep = ref(200)
@@ -221,29 +221,33 @@ export function useD3Coordinate(
         const defs = svg!.select<SVGDefsElement>('defs') || svg!.append('defs')
         const gradient = defs.append('linearGradient')
           .attr('id', 'gray-gradient')
-          .attr('x1', '0%')
-          .attr('y1', '0%')
-          .attr('x2', '100%')
-          .attr('y2', '0%')
+          .attr('gradientUnits', 'userSpaceOnUse')
+          .attr('x1', -10000)
+          .attr('y1', 0)
+          .attr('x2', x + stageStep.value)
+          .attr('y2', 0)
 
         gradient.append('stop')
-          .attr('offset', '0%')
-          .attr('stop-color', 'rgba(80, 80, 80, 0.4)')
+          .attr('offset', 0)
+          .attr('stop-color', 'rgba(60, 60, 60, 0.5)')
 
         gradient.append('stop')
-          .attr('offset', '100%')
+          .attr('offset', 0.7)
+          .attr('stop-color', 'rgba(40, 40, 40, 0.3)')
+
+        gradient.append('stop')
+          .attr('offset', 1)
           .attr('stop-color', 'rgba(0, 0, 0, 0)')
 
-        // 添加渐变矩形覆盖整个阶段区域
+        // 添加渐变矩形覆盖从左侧无限远到当前阶段右边缘
         stageG.append('rect')
           .attr('class', 'stage-gray-background')
-          .attr('x', x)
-          .attr('y', 0)
-          .attr('width', stageStep.value)
-          .attr('height', contentHeight.value)
+          .attr('x', -10000)
+          .attr('y', -10000)
+          .attr('width', 10000 + x + stageStep.value)
+          .attr('height', contentHeight.value + 20000)
           .attr('fill', 'url(#gray-gradient)')
           .attr('pointer-events', 'none')
-          .style('opacity', 0.8)
       }
 
       // 阶段线段 - 白色
