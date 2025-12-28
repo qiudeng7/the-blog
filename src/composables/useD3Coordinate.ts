@@ -20,7 +20,8 @@ export interface StageSegment {
 
 export function useD3Coordinate(
   svgRef: Ref<SVGSVGElement | null>,
-  technologies: Ref<Technology[]>
+  technologies: Ref<Technology[]>,
+  currentZoom: Ref<number>
 ) {
   const hoveredPoint = ref<D3Point | null>(null)
   const hoveredStage = ref<StageSegment | null>(null)
@@ -35,58 +36,47 @@ export function useD3Coordinate(
   let mainGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
   let contentGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
 
-  // 视差效果
+  // 视差效果 - 可通过 debug 面板调整
   const parallaxX = ref(0)
   const parallaxY = ref(0)
   const targetParallaxX = ref(0)
   const targetParallaxY = ref(0)
-  const parallaxStrength = 0.03
+  const parallaxStrength = ref(0.08)  // 改为 ref 以支持动态调整
   let animationFrameId: number | null = null
 
-  // 布局配置
+  // 布局配置 - 可通过 debug 面板调整
   const padding = { top: 100, right: 100, bottom: 150, left: 100 }
-  const pointRadius = 12
+  const pointRadius = ref(12)  // 改为 ref
   const yAxisMax = 5
-  const stageStep = 200
-  const depthStep = 150
+  const stageStep = ref(200)  // 改为 ref
+  const depthStep = ref(150)  // 改为 ref
+  const initialScale = ref(1.0)  // 初始缩放比例
 
-  // 内容总尺寸
-  const contentWidth = developmentStages.length * stageStep
-  const contentHeight = yAxisMax * depthStep
+  // 内容总尺寸 - 动态计算
+  const contentWidth = ref(developmentStages.length * stageStep.value)
+  const contentHeight = ref(yAxisMax * depthStep.value)
 
-  // 计算掌握程度的颜色
+  // 监听参数变化，更新内容尺寸
+  function updateContentDimensions() {
+    contentWidth.value = developmentStages.length * stageStep.value
+    contentHeight.value = yAxisMax * depthStep.value
+  }
+
+  // 计算掌握程度的颜色 - 黑白渐变
   function getMasteryColor(mastery: number): string {
-    const colors = [
-      { r: 241, g: 245, b: 249 }, // 0.0
-      { r: 203, g: 213, b: 225 }, // 0.25
-      { r: 148, g: 163, b: 184 }, // 0.5
-      { r: 100, g: 116, b: 139 }, // 0.75
-      { r: 51, g: 80, b: 85 }     // 1.0
-    ]
-
-    const index = mastery * (colors.length - 1)
-    const lower = Math.floor(index)
-    const upper = Math.ceil(index)
-    const ratio = index - lower
-
-    const c1 = colors[Math.min(lower, colors.length - 1)]
-    const c2 = colors[Math.min(upper, colors.length - 1)]
-
-    const r = Math.round(c1.r + (c2.r - c1.r) * ratio)
-    const g = Math.round(c1.g + (c2.g - c1.g) * ratio)
-    const b = Math.round(c1.b + (c2.b - c1.b) * ratio)
-
-    return `rgb(${r}, ${g}, ${b})`
+    // 黑白渐变：从浅灰到纯黑
+    const lightness = 255 - mastery * 200  // 0.0 -> 255, 1.0 -> 55
+    return `rgb(${lightness}, ${lightness}, ${lightness})`
   }
 
   // 获取 X 轴位置
   function getXPosition(stageOrder: number): number {
-    return padding.left + stageStep * (stageOrder - 0.5)
+    return padding.left + stageStep.value * (stageOrder - 0.5)
   }
 
   // 获取 Y 轴位置
   function getYPosition(depth: number): number {
-    return padding.top + contentHeight - depth * depthStep
+    return padding.top + contentHeight.value - depth * depthStep.value
   }
 
   // 平滑视差动画
@@ -109,6 +99,39 @@ export function useD3Coordinate(
     }
   }
 
+  // 应用 debug 参数
+  function applyDebugParams(params: Record<string, any>) {
+    if (params.parallaxStrength !== undefined) {
+      parallaxStrength.value = params.parallaxStrength
+    }
+    if (params.pointRadius !== undefined) {
+      pointRadius.value = params.pointRadius
+    }
+    if (params.stageStep !== undefined) {
+      stageStep.value = params.stageStep
+      updateContentDimensions()
+    }
+    if (params.depthStep !== undefined) {
+      depthStep.value = params.depthStep
+      updateContentDimensions()
+    }
+    if (params.initialScale !== undefined) {
+      initialScale.value = params.initialScale
+    }
+    render()
+  }
+
+  // 获取当前参数值
+  function getCurrentParams() {
+    return {
+      parallaxStrength: parallaxStrength.value,
+      pointRadius: pointRadius.value,
+      stageStep: stageStep.value,
+      depthStep: depthStep.value,
+      initialScale: initialScale.value
+    }
+  }
+
   // 触发视差动画
   function triggerParallax(): void {
     if (animationFrameId !== null) {
@@ -121,84 +144,98 @@ export function useD3Coordinate(
   function drawAxes(): void {
     if (!contentGroup) return
 
-    // 背景
+    // 背景 - 黑色
     contentGroup.append('rect')
       .attr('class', 'background')
       .attr('x', -10000)
       .attr('y', -10000)
-      .attr('width', contentWidth + 20000)
-      .attr('height', contentHeight + 20000)
-      .attr('fill', '#1e293b')
+      .attr('width', contentWidth.value + 20000)
+      .attr('height', contentHeight.value + 20000)
+      .attr('fill', '#000000')
 
-    // Y 轴网格线和标签
+    // Y 轴水平网格线
     for (let i = 1; i <= yAxisMax; i++) {
       const y = getYPosition(i)
 
-      // 网格线
+      // 网格线 - 白色
       contentGroup.append('line')
-        .attr('class', 'grid-line')
+        .attr('class', 'grid-line-y')
         .attr('x1', padding.left)
         .attr('y1', y)
-        .attr('x2', padding.left + contentWidth)
+        .attr('x2', padding.left + contentWidth.value)
         .attr('y2', y)
-        .attr('stroke', 'rgba(148, 163, 184, 0.2)')
-        .attr('stroke-width', 2)
+        .attr('stroke', 'rgba(255, 255, 255, 0.15)')
+        .attr('stroke-width', 1)
 
-      // Y 轴标签
+      // Y 轴标签 - 白色
       contentGroup.append('text')
         .attr('class', 'y-axis-label')
         .attr('x', padding.left - 20)
         .attr('y', y)
         .attr('text-anchor', 'end')
         .attr('dominant-baseline', 'middle')
-        .attr('fill', '#94a3b8')
+        .attr('fill', '#ffffff')
         .attr('font-size', '16px')
         .text(i.toString())
     }
 
-    // Y 轴标题
+    // X 轴垂直网格线
+    for (let i = 0; i <= developmentStages.length; i++) {
+      const x = padding.left + stageStep.value * i
+
+      contentGroup.append('line')
+        .attr('class', 'grid-line-x')
+        .attr('x1', x)
+        .attr('y1', padding.top)
+        .attr('x2', x)
+        .attr('y2', padding.top + contentHeight.value)
+        .attr('stroke', 'rgba(255, 255, 255, 0.15)')
+        .attr('stroke-width', 1)
+    }
+
+    // Y 轴标题 - 白色
     contentGroup.append('text')
       .attr('class', 'y-axis-title')
       .attr('x', 50)
-      .attr('y', contentHeight / 2)
+      .attr('y', contentHeight.value / 2)
       .attr('text-anchor', 'middle')
-      .attr('fill', '#94a3b8')
+      .attr('fill', '#ffffff')
       .attr('font-size', '20px')
-      .attr('transform', `rotate(-90, 50, ${contentHeight / 2})`)
+      .attr('transform', `rotate(-90, 50, ${contentHeight.value / 2})`)
       .text('抽象深度')
 
     // X 轴阶段线段
     const stageGroup = contentGroup.append('g').attr('class', 'x-axis-stages')
 
     developmentStages.forEach((stage, index) => {
-      const x = padding.left + stageStep * index
-      const segmentWidth = stageStep * 0.7
-      const segmentX = x + stageStep * 0.15
+      const x = padding.left + stageStep.value * index
+      const segmentWidth = stageStep.value * 0.7
+      const segmentX = x + stageStep.value * 0.15
 
       const stageG = stageGroup.append('g')
         .attr('class', `stage stage-${stage.id}`)
         .datum(stage)
 
-      // 阶段线段
+      // 阶段线段 - 白色
       stageG.append('line')
         .attr('class', 'stage-line')
         .attr('x1', segmentX)
-        .attr('y1', contentHeight + 20)
+        .attr('y1', contentHeight.value + 20)
         .attr('x2', segmentX + segmentWidth)
-        .attr('y2', contentHeight + 20)
-        .attr('stroke', 'rgba(59, 130, 246, 0.5)')
+        .attr('y2', contentHeight.value + 20)
+        .attr('stroke', 'rgba(255, 255, 255, 0.6)')
         .attr('stroke-width', 4)
         .attr('stroke-linecap', 'round')
 
-      // 阶段标签
+      // 阶段标签 - 白色
       stageG.append('text')
         .attr('class', 'stage-label')
         .attr('x', segmentX + segmentWidth / 2)
-        .attr('y', contentHeight + 60)
+        .attr('y', contentHeight.value + 60)
         .attr('text-anchor', 'end')
-        .attr('fill', '#94a3b8')
+        .attr('fill', '#ffffff')
         .attr('font-size', '14px')
-        .attr('transform', `rotate(-30, ${segmentX + segmentWidth / 2}, ${contentHeight + 60})`)
+        .attr('transform', `rotate(-30, ${segmentX + segmentWidth / 2}, ${contentHeight.value + 60})`)
         .text(stage.name)
     })
   }
@@ -218,14 +255,14 @@ export function useD3Coordinate(
 
       const pointG = pointsGroup.append('g')
         .attr('class', `point point-${tech.title}`)
-        .datum({ x, y, technology: tech, radius: pointRadius })
+        .datum({ x, y, technology: tech, radius: pointRadius.value })
 
       // 外发光效果（默认隐藏）
       const glow = pointG.append('circle')
         .attr('class', 'point-glow')
         .attr('cx', x)
         .attr('cy', y)
-        .attr('r', pointRadius * 2)
+        .attr('r', pointRadius.value * 2)
         .attr('fill', 'url(#glow-gradient)')
         .style('opacity', 0)
 
@@ -234,14 +271,14 @@ export function useD3Coordinate(
         .attr('class', 'point-circle')
         .attr('cx', x)
         .attr('cy', y)
-        .attr('r', pointRadius)
+        .attr('r', pointRadius.value)
         .attr('fill', getMasteryColor(tech.mastery))
-        .attr('stroke', 'rgba(255, 255, 255, 0.3)')
+        .attr('stroke', 'rgba(255, 255, 255, 0.5)')
         .attr('stroke-width', 2)
         .style('cursor', 'pointer')
     })
 
-    // 添加渐变定义
+    // 添加渐变定义 - 白色光晕
     const defs = svg!.select<SVGDefsElement>('defs') || svg!.append('defs')
     const gradient = defs.append('radialGradient')
       .attr('id', 'glow-gradient')
@@ -251,11 +288,11 @@ export function useD3Coordinate(
 
     gradient.append('stop')
       .attr('offset', '0%')
-      .attr('stop-color', 'rgba(59, 130, 246, 0.3)')
+      .attr('stop-color', 'rgba(255, 255, 255, 0.4)')
 
     gradient.append('stop')
       .attr('offset', '100%')
-      .attr('stop-color', 'rgba(59, 130, 246, 0)')
+      .attr('stop-color', 'rgba(255, 255, 255, 0)')
   }
 
   // 更新阶段悬停状态
@@ -270,7 +307,7 @@ export function useD3Coordinate(
     contentGroup.selectAll<SVGLineElement, typeof developmentStages[0]>('.stage-line')
       .attr('stroke', function() {
         const stage = d3.select(this).datum() as typeof developmentStages[0]
-        return stage.id === stageId ? '#3b82f6' : 'rgba(59, 130, 246, 0.5)'
+        return stage.id === stageId ? '#ffffff' : 'rgba(255, 255, 255, 0.6)'
       })
       .attr('stroke-width', function() {
         const stage = d3.select(this).datum() as typeof developmentStages[0]
@@ -280,7 +317,7 @@ export function useD3Coordinate(
     contentGroup.selectAll<SVGTextElement, typeof developmentStages[0]>('.stage-label')
       .attr('fill', function() {
         const stage = d3.select(this).datum() as typeof developmentStages[0]
-        return stage.id === stageId ? '#3b82f6' : '#94a3b8'
+        return stage.id === stageId ? '#ffffff' : 'rgba(255, 255, 255, 0.8)'
       })
   }
 
@@ -296,11 +333,11 @@ export function useD3Coordinate(
     contentGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
       .attr('r', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? pointRadius * 1.5 : pointRadius
+        return data.technology.title === techTitle ? pointRadius.value * 1.5 : pointRadius.value
       })
       .attr('stroke', function() {
         const data = d3.select(this).datum() as D3Point
-        return data.technology.title === techTitle ? '#3b82f6' : 'rgba(255, 255, 255, 0.3)'
+        return data.technology.title === techTitle ? '#ffffff' : 'rgba(255, 255, 255, 0.5)'
       })
       .attr('stroke-width', function() {
         const data = d3.select(this).datum() as D3Point
@@ -318,12 +355,16 @@ export function useD3Coordinate(
   function render(): void {
     if (!contentGroup) return
 
+    console.log('Rendering coordinate system with', technologies.value.length, 'technologies')
+
     // 清除现有内容
     contentGroup.selectAll('*').remove()
 
     // 重新绘制
     drawAxes()
     drawPoints()
+
+    console.log('Render complete')
   }
 
   // 鼠标移动处理
@@ -338,8 +379,8 @@ export function useD3Coordinate(
     const centerX = svgWidth.value / 2
     const centerY = svgHeight.value / 2
 
-    targetParallaxX.value = (centerX - mouseX) * parallaxStrength
-    targetParallaxY.value = (centerY - mouseY) * parallaxStrength
+    targetParallaxX.value = (centerX - mouseX) * parallaxStrength.value
+    targetParallaxY.value = (centerY - mouseY) * parallaxStrength.value
 
     triggerParallax()
 
@@ -357,21 +398,21 @@ export function useD3Coordinate(
       const y = getYPosition(tech.y_axis)
       const distance = Math.sqrt((worldX - x) ** 2 + (worldY - y) ** 2)
 
-      const hitRadius = Math.max(pointRadius, 20 / transform.k)
+      const hitRadius = Math.max(pointRadius.value, 20 / transform.k)
 
       if (distance <= hitRadius) {
-        foundPoint = { x, y, technology: tech, radius: pointRadius }
+        foundPoint = { x, y, technology: tech, radius: pointRadius.value }
         break
       }
     }
 
     // 检查阶段
     let foundStage: StageSegment | null = null
-    if (!foundPoint && worldY >= contentHeight && worldY <= contentHeight + 100) {
+    if (!foundPoint && worldY >= contentHeight.value && worldY <= contentHeight.value + 100) {
       for (const stage of developmentStages) {
-        const x = padding.left + stageStep * (stage.order - 1)
-        const segmentX = x + stageStep * 0.15
-        const segmentWidth = stageStep * 0.7
+        const x = padding.left + stageStep.value * (stage.order - 1)
+        const segmentX = x + stageStep.value * 0.15
+        const segmentWidth = stageStep.value * 0.7
 
         if (worldX >= segmentX && worldX <= segmentX + segmentWidth) {
           foundStage = { stage }
@@ -418,24 +459,14 @@ export function useD3Coordinate(
       .attr('height', svgHeight.value)
 
     // 初始化时居中
-    if (!g || g.selectAll('*').size() === 0) {
-      const contentCenterX = padding.left + contentWidth / 2
-      const contentCenterY = padding.top + contentHeight / 2
+    if (!contentGroup || contentGroup.selectAll('*').size() === 0) {
+      const contentCenterX = padding.left + contentWidth.value / 2
+      const contentCenterY = padding.top + contentHeight.value / 2
 
       const initialTransform = d3.zoomIdentity
         .translate(svgWidth.value / 2 - contentCenterX, svgHeight.value / 2 - contentCenterY)
 
-      if (zoom) {
-        zoom = d3.zoom<SVGSVGElement, unknown>()
-          .scaleExtent([0.1, 5])
-          .on('zoom', (event) => {
-            if (g) {
-              g.attr('transform', event.transform)
-            }
-          })
-
-        d3.select(svgRef.value).call(zoom)
-
+      if (zoom && svgRef.value) {
         // 应用初始变换
         d3.select(svgRef.value)
           .call(zoom.transform, initialTransform)
@@ -449,6 +480,8 @@ export function useD3Coordinate(
   onMounted(() => {
     if (!svgRef.value) return
 
+    console.log('useD3Coordinate initializing...')
+
     svg = d3.select(svgRef.value)
 
     // 创建主组（用于缩放/平移）
@@ -457,12 +490,16 @@ export function useD3Coordinate(
     // 创建内容组（用于视差效果）
     contentGroup = mainGroup.append('g')
 
+    console.log('SVG groups created')
+
     // 设置缩放行为
     zoom = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 5])
       .on('zoom', (event) => {
         if (mainGroup) {
           mainGroup.attr('transform', event.transform)
+          // 更新缩放值
+          currentZoom.value = event.transform.k
         }
       })
 
@@ -474,6 +511,40 @@ export function useD3Coordinate(
     // 添加事件监听
     svg.on('mousemove', handleMouseMove)
     svg.on('mouseleave', handleMouseLeave)
+
+    // 监听 debug 面板参数调整事件
+    window.addEventListener('debug-apply-params', ((event: CustomEvent) => {
+      applyDebugParams(event.detail)
+      // 发送更新后的参数值
+      window.dispatchEvent(new CustomEvent('debug-update-values', {
+        detail: getCurrentParams()
+      }))
+    }) as EventListener)
+
+    // 监听重置事件
+    window.addEventListener('debug-reset-params', () => {
+      // 重置为默认值
+      parallaxStrength.value = 0.08
+      pointRadius.value = 12
+      stageStep.value = 200
+      depthStep.value = 150
+      initialScale.value = 1.0
+      updateContentDimensions()
+      render()
+
+      window.dispatchEvent(new CustomEvent('debug-update-values', {
+        detail: getCurrentParams()
+      }))
+    })
+
+    // 发送初始参数值
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('debug-update-values', {
+        detail: getCurrentParams()
+      }))
+    }, 100)
+
+    console.log('useD3Coordinate initialized')
   })
 
   onUnmounted(() => {
@@ -492,6 +563,7 @@ export function useD3Coordinate(
     hoveredPoint,
     hoveredStage,
     handleResize,
-    render
+    render,
+    zoom
   }
 }
