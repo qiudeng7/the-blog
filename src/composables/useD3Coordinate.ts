@@ -388,6 +388,11 @@ export function useD3Coordinate(
 
     const duration = 300 // 动画时长 300ms
 
+    // 先中断所有动画，避免累积
+    overlayParallaxGroup.selectAll('.point-circle').interrupt()
+    overlayParallaxGroup.selectAll('.point-glow').interrupt()
+    overlayParallaxGroup.selectAll('.point-label').interrupt()
+
     overlayParallaxGroup.selectAll('.point').classed('hovered', function() {
       const data = d3.select(this).datum() as D3Point
       return data.technology.title === techTitle
@@ -427,7 +432,7 @@ export function useD3Coordinate(
         return data.technology.title === techTitle ? 1 : (techTitle ? 0.5 : 1)
       })
 
-    // 外层光晕动画 - 脉冲效果
+    // 外层光晕动画
     overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-glow')
       .transition()
       .duration(duration)
@@ -446,35 +451,27 @@ export function useD3Coordinate(
 
     // 如果有悬停节点，添加脉冲动画
     if (techTitle) {
-      overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
+      const hoveredCircle = overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
         .filter(function() {
           const data = d3.select(this).datum() as D3Point
           return data.technology.title === techTitle
         })
-        .transition()
-        .duration(1500)
-        .ease(d3.easeLinear)
-        .attr('stroke-width', 3)
-        .transition()
-        .duration(1500)
-        .ease(d3.easeLinear)
-        .attr('stroke-width', 2)
-        .on('end', function repeat() {
-          d3.select(this)
-            .transition()
-            .duration(1500)
-            .ease(d3.easeLinear)
-            .attr('stroke-width', 3)
-            .transition()
-            .duration(1500)
-            .ease(d3.easeLinear)
-            .attr('stroke-width', 2)
-            .on('end', repeat)
-        })
-    } else {
-      // 取消所有脉冲动画
-      overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
-        .interrupt()
+
+      // 使用无限循环的transition实现脉冲效果
+      function pulse() {
+        hoveredCircle
+          .transition()
+          .duration(1500)
+          .ease(d3.easeSinInOut)
+          .attr('stroke-width', 2.5)
+          .transition()
+          .duration(1500)
+          .ease(d3.easeSinInOut)
+          .attr('stroke-width', 3)
+          .on('end', pulse)
+      }
+
+      pulse()
     }
 
     // 标签动画
