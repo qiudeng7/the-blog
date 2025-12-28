@@ -6,11 +6,6 @@
 import fm from 'front-matter'
 import type { Technology } from '../types/content'
 
-interface MarkdownModule {
-  default?: string
-  [key: string]: any
-}
-
 /**
  * 加载所有技术栈内容
  */
@@ -25,7 +20,10 @@ export async function loadTechnologies(): Promise<Technology[]> {
     const technologies: Technology[] = []
 
     for (const path in modules) {
-      const content = await modules[path]()
+      const moduleFn = modules[path]
+      if (!moduleFn) continue
+
+      const content = await moduleFn()
       const parsed = fm<Technology>(content as string)
 
       technologies.push({

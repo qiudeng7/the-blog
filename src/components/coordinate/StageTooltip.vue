@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import type { DevelopmentStage } from '../../data/development-lifecycle'
 import type { Technology } from '../../types/content'
 
@@ -73,29 +73,6 @@ const props = defineProps<Props>()
 const visible = ref(false)
 const x = ref(0)
 const y = ref(0)
-
-// 简单的 Markdown 渲染（仅支持基础语法）
-const renderedDetails = computed(() => {
-  if (!props.technology) return ''
-
-  let html = props.technology.details
-
-  // 标题
-  html = html.replace(/^### (.*$)/gim, '<h4>$1</h4>')
-  html = html.replace(/^## (.*$)/gim, '<h3>$1</h3>')
-
-  // 列表
-  html = html.replace(/^\- (.*$)/gim, '<li>$1</li>')
-  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-
-  // 加粗
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-
-  // 换行
-  html = html.replace(/\n/g, '<br>')
-
-  return html
-})
 
 // 获取星星数量（mastery 字段直接表示星星数量）
 function getStarCount(mastery: number): number {

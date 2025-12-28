@@ -78,19 +78,15 @@ export function useCoordinateCanvas(
     const c1 = colors[Math.min(lower, colors.length - 1)]
     const c2 = colors[Math.min(upper, colors.length - 1)]
 
+    if (!c1 || !c2) {
+      return `rgb(128, 128, 128)`
+    }
+
     const r = Math.round(c1.r + (c2.r - c1.r) * ratio)
     const g = Math.round(c1.g + (c2.g - c1.g) * ratio)
     const b = Math.round(c1.b + (c2.b - c1.b) * ratio)
 
     return `rgb(${r}, ${g}, ${b})`
-  }
-
-  // 世界坐标转屏幕坐标
-  function worldToScreen(x: number, y: number): { x: number; y: number } {
-    return {
-      x: x * scale.value + translateX.value + parallaxX.value,
-      y: y * scale.value + translateY.value + parallaxY.value
-    }
   }
 
   // 屏幕坐标转世界坐标
@@ -325,12 +321,15 @@ export function useCoordinateCanvas(
         const segmentWidth = stageStep * 0.7
 
         if (world.x >= segmentX && world.x <= segmentX + segmentWidth) {
+          const stage = developmentStages[i]
+          if (!stage) return null
+
           return {
             x: segmentX,
             y: contentHeight + 20,
             width: segmentWidth,
             height: 40,
-            stage: developmentStages[i]
+            stage
           }
         }
       }
