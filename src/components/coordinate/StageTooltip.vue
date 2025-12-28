@@ -197,8 +197,12 @@ defineExpose({
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  animation: iconFlip 3s ease-in-out infinite;
   position: relative;
+}
+
+/* Tooltip 显示时触发翻转动画 */
+.technology-tooltip:hover .tech-icon-container {
+  animation: iconFlip 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
 .tech-icon-container :deep(svg) {
@@ -209,11 +213,14 @@ defineExpose({
 }
 
 @keyframes iconFlip {
-  0%, 100% {
-    transform: rotateY(0deg);
+  0% {
+    transform: rotateY(0deg) scale(1);
   }
   50% {
-    transform: rotateY(180deg);
+    transform: rotateY(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotateY(360deg) scale(1);
   }
 }
 
