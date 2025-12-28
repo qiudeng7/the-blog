@@ -396,7 +396,13 @@ export function useD3Coordinate(
 
     triggerParallax()
 
-    // 检测悬停 - 直接使用鼠标坐标（无缩放）
+    // 检测悬停 - 需要考虑视差偏移
+    // 节点因为视差效果移动了，视觉位置 = 原始位置 + parallax
+    // 鼠标在视觉位置上，要反向调整来匹配原始位置
+    // 使用目标值而不是当前值，因为动画可能还没完成
+    const adjustedMouseX = mouseX - targetParallaxX.value
+    const adjustedMouseY = mouseY - targetParallaxY.value
+
     // 检查技术点
     let foundPoint: D3Point | null = null
     for (const tech of technologies.value) {
@@ -405,7 +411,7 @@ export function useD3Coordinate(
 
       const x = getXPosition(stage.order)
       const y = getYPosition(tech.y_axis)
-      const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2)
+      const distance = Math.sqrt((adjustedMouseX - x) ** 2 + (adjustedMouseY - y) ** 2)
 
       const hitRadius = Math.max(pointRadius.value, 20)
 
@@ -415,15 +421,15 @@ export function useD3Coordinate(
       }
     }
 
-    // 检查阶段
+    // 检查阶段（阶段在 contentGroup 中，也有视差效果）
     let foundStage: StageSegment | null = null
-    if (!foundPoint && mouseY >= contentHeight.value && mouseY <= contentHeight.value + 100) {
+    if (!foundPoint && adjustedMouseY >= contentHeight.value && adjustedMouseY <= contentHeight.value + 100) {
       for (const stage of developmentStages) {
         const x = padding.left + stageStep.value * (stage.order - 1)
         const segmentX = x + stageStep.value * 0.15
         const segmentWidth = stageStep.value * 0.7
 
-        if (mouseX >= segmentX && mouseX <= segmentX + segmentWidth) {
+        if (adjustedMouseX >= segmentX && adjustedMouseX <= segmentX + segmentWidth) {
           foundStage = { stage }
           break
         }
@@ -546,6 +552,8 @@ export function useD3Coordinate(
     hoveredPoint,
     hoveredStage,
     handleResize,
-    render
+    render,
+    parallaxX: targetParallaxX,  // 返回目标值而不是当前值
+    parallaxY: targetParallaxY
   }
 }

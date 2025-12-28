@@ -1,8 +1,8 @@
 ---
 title: "TypeScript"
 x_axis: "implementation"
-y_axis: 2
-mastery: 0.80
+y_axis: 5
+mastery: 0.10
 tags: ["language", "javascript", "typing"]
 description: "JavaScript 的超集，添加了类型系统"
 ---

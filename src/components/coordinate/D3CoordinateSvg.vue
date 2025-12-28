@@ -34,7 +34,7 @@ const hoveredTechnology = ref<Technology | null>(null)
 // 检测是否为开发模式
 const isDevMode = computed(() => import.meta.env.DEV)
 
-const { hoveredPoint, hoveredStage: d3HoveredStage } = useD3Coordinate(
+const { hoveredPoint, hoveredStage: d3HoveredStage, parallaxX, parallaxY } = useD3Coordinate(
   svgRef,
   technologies
 )
@@ -52,7 +52,13 @@ watch([hoveredPoint, d3HoveredStage], () => {
 
 // 处理鼠标移动，更新 tooltip 位置
 function handleMouseMove(event: MouseEvent) {
-  tooltipRef.value?.position(event)
+  // 需要考虑视差偏移
+  // 内容移动了，tooltip 也要跟着移动
+  const adjustedEvent = {
+    clientX: event.clientX - parallaxX.value,
+    clientY: event.clientY - parallaxY.value
+  }
+  tooltipRef.value?.position(adjustedEvent as MouseEvent)
 }
 </script>
 
