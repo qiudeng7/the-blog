@@ -36,6 +36,7 @@ export function useD3Coordinate(
   let mainGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
   let contentGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
   let overlayGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
+  let overlayParallaxGroup: d3.Selection<SVGGElement, unknown, null, undefined> | null = null
 
   // 视差效果 - 可通过 debug 面板调整
   const parallaxX = ref(0)
@@ -90,6 +91,11 @@ export function useD3Coordinate(
     // 应用视差偏移到内容组
     if (contentGroup) {
       contentGroup.attr('transform', `translate(${parallaxX.value},${parallaxY.value})`)
+    }
+
+    // 应用视差偏移到覆盖层视差组
+    if (overlayParallaxGroup) {
+      overlayParallaxGroup.attr('transform', `translate(${parallaxX.value},${parallaxY.value})`)
     }
 
     if (
@@ -243,21 +249,23 @@ export function useD3Coordinate(
 
   // 更新覆盖层中节点的位置（响应缩放和平移）
   function updateOverlayPositions(transform: d3.ZoomTransform): void {
-    if (!overlayGroup) return
+    if (!overlayParallaxGroup) return
 
-    overlayGroup.selectAll<SVGGElement, D3Point>('.point').attr('transform', function(d) {
-      // 应用缩放和平移变换到节点位置
+    // 对每个节点应用位置变换，但不改变大小
+    overlayParallaxGroup.selectAll<SVGGElement, D3Point>('.point').attr('transform', function(d) {
+      // 计算变换后的位置
       const transformedX = d.x * transform.k + transform.x
       const transformedY = d.y * transform.k + transform.y
+      // 只移动位置，不改变原始坐标（因为节点的 cx, cy 还是用 d.x, d.y）
       return `translate(${transformedX - d.x}, ${transformedY - d.y})`
     })
   }
 
   // 绘制技术点
   function drawPoints(): void {
-    if (!overlayGroup) return
+    if (!overlayParallaxGroup) return
 
-    const pointsGroup = overlayGroup.append('g').attr('class', 'technology-points')
+    const pointsGroup = overlayParallaxGroup.append('g').attr('class', 'technology-points')
 
     technologies.value.forEach(tech => {
       const stage = developmentStages.find(s => s.id === tech.x_axis)
@@ -348,14 +356,14 @@ export function useD3Coordinate(
 
   // 更新点悬停状态
   function updatePointHover(techTitle: string | null): void {
-    if (!overlayGroup) return
+    if (!overlayParallaxGroup) return
 
-    overlayGroup.selectAll('.point').classed('hovered', function() {
+    overlayParallaxGroup.selectAll('.point').classed('hovered', function() {
       const data = d3.select(this).datum() as D3Point
       return data.technology.title === techTitle
     })
 
-    overlayGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
+    overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-circle')
       .attr('r', function() {
         const data = d3.select(this).datum() as D3Point
         return data.technology.title === techTitle ? pointRadius.value * 1.5 : pointRadius.value
@@ -369,7 +377,7 @@ export function useD3Coordinate(
         return data.technology.title === techTitle ? 3 : 2
       })
 
-    overlayGroup.selectAll<SVGCircleElement, D3Point>('.point-glow')
+    overlayParallaxGroup.selectAll<SVGCircleElement, D3Point>('.point-glow')
       .style('opacity', function() {
         const data = d3.select(this).datum() as D3Point
         return data.technology.title === techTitle ? 1 : 0
@@ -378,13 +386,13 @@ export function useD3Coordinate(
 
   // 重新渲染
   function render(): void {
-    if (!contentGroup || !overlayGroup) return
+    if (!contentGroup || !overlayParallaxGroup) return
 
     console.log('Rendering coordinate system with', technologies.value.length, 'technologies')
 
     // 清除现有内容
     contentGroup.selectAll('*').remove()
-    overlayGroup.selectAll('*').remove()
+    overlayParallaxGroup.selectAll('*').remove()
 
     // 重新绘制
     drawAxes()
@@ -521,6 +529,9 @@ export function useD3Coordinate(
 
     // 创建覆盖层组（用于节点和文本，不受缩放影响）
     overlayGroup = svg.append('g').attr('class', 'overlay-group')
+
+    // 创建覆盖层视差组（用于节点和文本的视差效果）
+    overlayParallaxGroup = overlayGroup.append('g').attr('class', 'overlay-parallax-group')
 
     console.log('SVG groups created')
 
