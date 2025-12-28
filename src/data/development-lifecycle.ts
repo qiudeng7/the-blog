@@ -35,9 +35,10 @@ export const developmentStages: DevelopmentStage[] = [
       '原型设计'
     ],
     kpis: [
-      '需求完整性',
-      '需求一致性',
-      '用户满意度预测'
+      '用户痛点覆盖度',
+      '功能完整性',
+      '优先级明确性',
+      '可测试性'
     ]
   },
   {
@@ -71,12 +72,10 @@ export const developmentStages: DevelopmentStage[] = [
       '测试计划'
     ],
     kpis: [
-      '架构可扩展性',
-      '性能可预测性',
-      '技术风险控制',
-      '设计覆盖率',
-      '接口一致性',
-      '设计可维护性'
+      '模块化与解耦程度',
+      '可扩展性',
+      '技术栈匹配度',
+      '安全性设计'
     ]
   },
   {
@@ -99,10 +98,10 @@ export const developmentStages: DevelopmentStage[] = [
       '技术文档'
     ],
     kpis: [
-      '代码质量',
+      '代码可读性/可维护性',
       '测试覆盖率',
-      '开发效率',
-      '缺陷密度'
+      '性能基准',
+      '安全编码规范'
     ]
   },
   {
@@ -128,9 +127,9 @@ export const developmentStages: DevelopmentStage[] = [
       '缺陷报告'
     ],
     kpis: [
-      '测试覆盖率',
-      '缺陷发现率',
-      '集成成功率',
+      '缺陷密度/趋势',
+      '测试通过率',
+      '需求达成率',
       '性能达标率'
     ]
   },
@@ -156,9 +155,9 @@ export const developmentStages: DevelopmentStage[] = [
     ],
     kpis: [
       '部署成功率',
-      '发布时间',
-      '回滚率',
-      '服务可用性'
+      '发布频率',
+      '平均部署时长',
+      '回滚能力与时间'
     ]
   },
   {
@@ -182,10 +181,10 @@ export const developmentStages: DevelopmentStage[] = [
       '容量规划报告'
     ],
     kpis: [
-      '系统可用性',
-      '平均响应时间',
-      '故障恢复时间',
-      '资源利用率'
+      '系统可用性(SLA)',
+      '平均恢复时间(MTTR)',
+      '监控覆盖率',
+      '告警准确率'
     ]
   }
 ]
