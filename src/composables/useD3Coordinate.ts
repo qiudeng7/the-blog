@@ -44,7 +44,7 @@ export function useD3Coordinate(
   let animationFrameId: number | null = null
 
   // 布局配置 - 可通过 debug 面板调整
-  const padding = { top: 100, right: 30, bottom: 150, left: 100 }
+  const padding = { top: 100, right: 10, bottom: 150, left: 100 }
   const pointRadius = ref(12)
   const yAxisMax = 5
   const stageStep = ref(200)
@@ -169,7 +169,7 @@ export function useD3Coordinate(
       // Y 轴标签 - 白色，移到右侧
       contentGroup.append('text')
         .attr('class', 'y-axis-label')
-        .attr('x', padding.left + contentWidth.value + 20)
+        .attr('x', padding.left + contentWidth.value + 10)
         .attr('y', y)
         .attr('text-anchor', 'start')
         .attr('dominant-baseline', 'middle')
@@ -227,12 +227,12 @@ export function useD3Coordinate(
     // Y 轴标题 - 白色，移到右侧
     contentGroup.append('text')
       .attr('class', 'y-axis-title')
-      .attr('x', padding.left + contentWidth.value + 60)
+      .attr('x', padding.left + contentWidth.value + 45)
       .attr('y', contentHeight.value / 2)
       .attr('text-anchor', 'middle')
       .attr('fill', '#ffffff')
       .attr('font-size', '20px')
-      .attr('transform', `rotate(-90, ${padding.left + contentWidth.value + 60}, ${contentHeight.value / 2})`)
+      .attr('transform', `rotate(-90, ${padding.left + contentWidth.value + 45}, ${contentHeight.value / 2})`)
       .text('抽象深度')
 
     // X 轴阶段线段
