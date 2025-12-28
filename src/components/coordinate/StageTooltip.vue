@@ -12,24 +12,6 @@
           <p class="tooltip-description">{{ stage.description }}</p>
 
           <div class="tooltip-section">
-            <h4 class="section-title">主要活动</h4>
-            <ul class="activity-list">
-              <li v-for="activity in stage.activities" :key="activity">
-                {{ activity }}
-              </li>
-            </ul>
-          </div>
-
-          <div class="tooltip-section">
-            <h4 class="section-title">交付物</h4>
-            <ul class="deliverable-list">
-              <li v-for="deliverable in stage.deliverables" :key="deliverable">
-                {{ deliverable }}
-              </li>
-            </ul>
-          </div>
-
-          <div class="tooltip-section">
             <h4 class="section-title">评估指标</h4>
             <ul class="kpi-list">
               <li v-for="kpi in stage.kpis" :key="kpi">
