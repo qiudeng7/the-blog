@@ -42,8 +42,7 @@
           <!-- Icon区域 -->
           <div class="tech-icon-wrapper">
             <div
-              class="tech-icon-container flip-animation"
-              :key="technology.title"
+              class="tech-icon-container"
               v-html="technology.icon || getDefaultIcon()"
             ></div>
           </div>
@@ -204,28 +203,11 @@ defineExpose({
   position: relative;
 }
 
-/* Icon 翻转动画 */
-.tech-icon-container.flip-animation {
-  animation: iconFlip 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-
 .tech-icon-container :deep(svg) {
   width: 48px;
   height: 48px;
   color: rgba(255, 255, 255, 0.9);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-
-@keyframes iconFlip {
-  0% {
-    transform: rotateY(0deg) scale(1);
-  }
-  50% {
-    transform: rotateY(180deg) scale(1.1);
-  }
-  100% {
-    transform: rotateY(360deg) scale(1);
-  }
 }
 
 /* 内容区域 */
