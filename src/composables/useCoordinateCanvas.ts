@@ -1,5 +1,5 @@
 /**
- * Canvas 无限画布 - 支持缩放和平移
+ * Canvas 无限画布 - 支持缩放和视差效果
  */
 
 import { ref, onMounted, onUnmounted, watch, type Ref } from 'vue'
@@ -38,12 +38,13 @@ export function useCoordinateCanvas(
   const translateX = ref(0)
   const translateY = ref(0)
 
-  // 拖拽状态
-  const isDragging = ref(false)
-  const dragStartX = ref(0)
-  const dragStartY = ref(0)
-  const dragStartTranslateX = ref(0)
-  const dragStartTranslateY = ref(0)
+  // 视差效果
+  const parallaxX = ref(0)
+  const parallaxY = ref(0)
+  const targetParallaxX = ref(0)
+  const targetParallaxY = ref(0)
+  const parallaxStrength = 0.03  // 视差强度
+  let animationFrameId: number | null = null
 
   // 布局配置（世界坐标）
   const padding = { top: 100, right: 100, bottom: 150, left: 100 }
@@ -84,16 +85,16 @@ export function useCoordinateCanvas(
   // 世界坐标转屏幕坐标
   function worldToScreen(x: number, y: number): { x: number; y: number } {
     return {
-      x: x * scale.value + translateX.value,
-      y: y * scale.value + translateY.value
+      x: x * scale.value + translateX.value + parallaxX.value,
+      y: y * scale.value + translateY.value + parallaxY.value
     }
   }
 
   // 屏幕坐标转世界坐标
   function screenToWorld(x: number, y: number): { x: number; y: number } {
     return {
-      x: (x - translateX.value) / scale.value,
-      y: (y - translateY.value) / scale.value
+      x: (x - translateX.value - parallaxX.value) / scale.value,
+      y: (y - translateY.value - parallaxY.value) / scale.value
     }
   }
 
@@ -110,7 +111,40 @@ export function useCoordinateCanvas(
   // 应用变换
   function applyTransform(): void {
     if (!ctx.value) return
-    ctx.value.setTransform(scale.value, 0, 0, scale.value, translateX.value, translateY.value)
+    ctx.value.setTransform(
+      scale.value,
+      0,
+      0,
+      scale.value,
+      translateX.value + parallaxX.value,
+      translateY.value + parallaxY.value
+    )
+  }
+
+  // 平滑视差动画
+  function animateParallax(): void {
+    const ease = 0.08  // 缓动系数
+
+    parallaxX.value += (targetParallaxX.value - parallaxX.value) * ease
+    parallaxY.value += (targetParallaxY.value - parallaxY.value) * ease
+
+    draw()
+
+    // 继续动画直到接近目标值
+    if (
+      Math.abs(targetParallaxX.value - parallaxX.value) > 0.1 ||
+      Math.abs(targetParallaxY.value - parallaxY.value) > 0.1
+    ) {
+      animationFrameId = requestAnimationFrame(animateParallax)
+    }
+  }
+
+  // 触发视差动画
+  function triggerParallax(): void {
+    if (animationFrameId !== null) {
+      cancelAnimationFrame(animationFrameId)
+    }
+    animationFrameId = requestAnimationFrame(animateParallax)
   }
 
   // 绘制坐标轴和网格
@@ -301,20 +335,7 @@ export function useCoordinateCanvas(
     return null
   }
 
-  // 鼠标按下（开始拖拽）
-  function handleMouseDown(event: MouseEvent): void {
-    isDragging.value = true
-    dragStartX.value = event.clientX
-    dragStartY.value = event.clientY
-    dragStartTranslateX.value = translateX.value
-    dragStartTranslateY.value = translateY.value
-
-    if (canvasRef.value) {
-      canvasRef.value.style.cursor = 'grabbing'
-    }
-  }
-
-  // 鼠标移动
+  // 鼠标移动（视差效果）
   function handleMouseMove(event: MouseEvent): void {
     const rect = canvasRef.value?.getBoundingClientRect()
     if (!rect) return
@@ -322,17 +343,14 @@ export function useCoordinateCanvas(
     const mouseX = event.clientX - rect.left
     const mouseY = event.clientY - rect.top
 
-    // 处理拖拽
-    if (isDragging.value) {
-      const dx = event.clientX - dragStartX.value
-      const dy = event.clientY - dragStartY.value
+    // 计算视差偏移（鼠标相对于画布中心的偏移）
+    const centerX = canvasWidth.value / 2
+    const centerY = canvasHeight.value / 2
 
-      translateX.value = dragStartTranslateX.value + dx
-      translateY.value = dragStartTranslateY.value + dy
+    targetParallaxX.value = (centerX - mouseX) * parallaxStrength
+    targetParallaxY.value = (centerY - mouseY) * parallaxStrength
 
-      draw()
-      return
-    }
+    triggerParallax()
 
     // 检测悬停
     const point = checkPointHover(mouseX, mouseY)
@@ -343,27 +361,22 @@ export function useCoordinateCanvas(
       hoveredStage.value = stage
 
       if (canvasRef.value) {
-        canvasRef.value.style.cursor = point || stage ? 'pointer' : 'grab'
+        canvasRef.value.style.cursor = point || stage ? 'pointer' : 'default'
       }
 
       draw()
     }
   }
 
-  // 鼠标松开
-  function handleMouseUp(): void {
-    isDragging.value = false
-    if (canvasRef.value) {
-      canvasRef.value.style.cursor = hoveredPoint.value || hoveredStage.value ? 'pointer' : 'grab'
-    }
-  }
-
   // 鼠标离开
   function handleMouseLeave(): void {
-    isDragging.value = false
     hoveredPoint.value = null
     hoveredStage.value = null
-    draw()
+
+    // 重置视差
+    targetParallaxX.value = 0
+    targetParallaxY.value = 0
+    triggerParallax()
   }
 
   // 滚轮缩放
@@ -433,26 +446,25 @@ export function useCoordinateCanvas(
     window.addEventListener('resize', handleResize)
 
     // 鼠标事件
-    canvasRef.value.addEventListener('mousedown', handleMouseDown)
     canvasRef.value.addEventListener('mousemove', handleMouseMove)
-    canvasRef.value.addEventListener('mouseup', handleMouseUp)
     canvasRef.value.addEventListener('mouseleave', handleMouseLeave)
     canvasRef.value.addEventListener('wheel', handleWheel, { passive: false })
 
     // 设置初始光标
     if (canvasRef.value) {
-      canvasRef.value.style.cursor = 'grab'
+      canvasRef.value.style.cursor = 'default'
     }
   })
 
   onUnmounted(() => {
     window.removeEventListener('resize', handleResize)
     if (canvasRef.value) {
-      canvasRef.value.removeEventListener('mousedown', handleMouseDown)
       canvasRef.value.removeEventListener('mousemove', handleMouseMove)
-      canvasRef.value.removeEventListener('mouseup', handleMouseUp)
       canvasRef.value.removeEventListener('mouseleave', handleMouseLeave)
       canvasRef.value.removeEventListener('wheel', handleWheel)
+    }
+    if (animationFrameId !== null) {
+      cancelAnimationFrame(animationFrameId)
     }
   })
 
