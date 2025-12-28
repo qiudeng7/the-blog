@@ -119,60 +119,39 @@ export const developmentStages: DevelopmentStage[] = [
     ]
   },
   {
-    id: 'unit-testing',
-    name: '单元测试',
-    nameEn: 'Unit Testing',
+    id: 'testing',
+    name: '测试',
+    nameEn: 'Testing',
     order: 5,
-    description: '对代码单元进行独立测试',
+    description: '单元测试和集成测试，确保代码质量和系统集成',
     activities: [
-      '测试用例设计',
-      '单元测试执行',
+      '单元测试编写与执行',
+      '集成测试设计',
+      '接口测试',
+      '端到端测试',
+      '性能测试',
       '测试覆盖率分析',
-      '缺陷修复',
-      '测试报告编写'
+      '缺陷修复与验证'
     ],
     deliverables: [
-      '单元测试用例',
+      '单元测试代码',
+      '集成测试用例',
       '测试覆盖率报告',
-      '缺陷报告',
-      '测试总结报告'
+      '性能测试报告',
+      '缺陷报告'
     ],
     kpis: [
       '测试覆盖率',
       '缺陷发现率',
-      '测试执行效率'
-    ]
-  },
-  {
-    id: 'integration-testing',
-    name: '集成测试',
-    nameEn: 'Integration Testing',
-    order: 6,
-    description: '测试模块间的集成和系统功能',
-    activities: [
-      '集成测试用例设计',
-      '接口测试',
-      '系统集成',
-      '端到端测试',
-      '性能测试'
-    ],
-    deliverables: [
-      '集成测试用例',
-      '集成测试报告',
-      '性能测试报告',
-      '缺陷修复记录'
-    ],
-    kpis: [
       '集成成功率',
-      '性能达标率',
-      '缺陷修复率'
+      '性能达标率'
     ]
   },
   {
     id: 'deployment',
     name: '部署发布',
     nameEn: 'Deployment',
-    order: 7,
+    order: 6,
     description: '将系统部署到生产环境',
     activities: [
       '部署准备',
@@ -199,7 +178,7 @@ export const developmentStages: DevelopmentStage[] = [
     id: 'maintenance',
     name: '运维监控',
     nameEn: 'Maintenance',
-    order: 8,
+    order: 7,
     description: '监控系统运行状态和维护系统',
     activities: [
       '系统监控',
