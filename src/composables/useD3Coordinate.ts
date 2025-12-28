@@ -209,15 +209,6 @@ export function useD3Coordinate(
   function drawAxes(): void {
     if (!contentGroup || !axisGroup) return
 
-    // 背景 - 黑色
-    contentGroup.append('rect')
-      .attr('class', 'background')
-      .attr('x', -10000)
-      .attr('y', -10000)
-      .attr('width', contentWidth.value + 20000)
-      .attr('height', contentHeight.value + 20000)
-      .attr('fill', '#000000')
-
     // Y 轴水平网格线 - 向两侧无限延伸
     for (let i = 1; i <= yAxisMax; i++) {
       const y = getYPosition(i)
