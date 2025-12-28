@@ -4,6 +4,7 @@
       ref="svgRef"
       class="coordinate-svg"
       @mousemove="handleMouseMove"
+      @contextmenu.prevent
     />
 
     <StageTooltip
