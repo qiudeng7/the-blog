@@ -72,7 +72,30 @@ function handleMouseMove(event: MouseEvent) {
   bottom: 0;
   margin: 0;
   padding: 0;
-  background-color: #000000;
+  background: radial-gradient(circle at 50% 50%,
+    #1a0632 0%,    /* Deep purple */
+    #140426 25%,
+    #0c021a 50%,
+    #06020e 75%,
+    #020108 100%   /* Almost black */
+  );
+}
+
+/* Glow overlay for blue-black ambient light */
+.d3-coordinate-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(60, 80, 255, 0.08) 0%,
+    rgba(40, 60, 200, 0.05) 40%,
+    transparent 70%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .coordinate-svg {
@@ -83,6 +106,8 @@ function handleMouseMove(event: MouseEvent) {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  position: relative;
+  z-index: 1;
 }
 
 /* 节点光晕呼吸动画 */

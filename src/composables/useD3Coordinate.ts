@@ -78,11 +78,12 @@ export function useD3Coordinate(
     contentHeight.value = yAxisMax * depthStep.value
   }
 
-  // 计算掌握程度的颜色 - 黑白渐变
+  // 计算掌握程度的颜色 - 星星白色
   function getMasteryColor(mastery: number): string {
-    // 黑白渐变：从浅灰到纯黑
-    const lightness = 255 - mastery * 200  // 0.0 -> 255, 1.0 -> 55
-    return `rgb(${lightness}, ${lightness}, ${lightness})`
+    // 白色星星，透明度根据掌握程度变化
+    // 掌握程度越高，星星越亮（不透明度越高）
+    const opacity = 0.3 + mastery * 0.7  // 0.0 -> 0.3, 1.0 -> 1.0
+    return `rgba(255, 255, 255, ${opacity})`
   }
 
   // 获取 X 轴位置
