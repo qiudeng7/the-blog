@@ -76,48 +76,61 @@ function handleCanvasMouseMove(event: MouseEvent) {
 
 <style scoped>
 .software-development {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--spacing-xl) var(--spacing-lg);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .page-header {
-  margin-bottom: var(--spacing-xl);
+  position: fixed;
+  top: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
   text-align: center;
+  pointer-events: none;
 }
 
 .page-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   background: linear-gradient(135deg, var(--color-accent), #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-shadow: 0 2px 10px rgba(15, 23, 42, 0.8);
 }
 
 .page-subtitle {
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  text-shadow: 0 2px 10px rgba(15, 23, 42, 0.8);
 }
 
 .legend {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-md);
-  background: var(--color-bg-secondary);
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: rgba(30, 41, 59, 0.9);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
+  pointer-events: auto;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  font-size: 0.875rem;
+  gap: var(--spacing-xs);
+  font-size: 0.8rem;
   color: var(--color-text-secondary);
 }
 
@@ -127,8 +140,8 @@ function handleCanvasMouseMove(event: MouseEvent) {
 }
 
 .legend-gradient {
-  width: 120px;
-  height: 12px;
+  width: 100px;
+  height: 10px;
   background: linear-gradient(to right, #f1f5f9, #cbd5e1, #94a3b8, #64748b, #334155);
   border-radius: var(--radius-sm);
   position: relative;
@@ -137,40 +150,44 @@ function handleCanvasMouseMove(event: MouseEvent) {
 }
 
 .gradient-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   position: relative;
-  top: 14px;
+  top: 12px;
 }
 
 .canvas-container {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 600px;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  height: 100%;
+  background: var(--color-bg-primary);
 }
 
 .coordinate-canvas {
   width: 100%;
   height: 100%;
   display: block;
-  cursor: crosshair;
 }
 
 @media (max-width: 768px) {
+  .page-header {
+    top: var(--spacing-md);
+    padding: 0 var(--spacing-md);
+  }
+
   .page-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 
   .legend {
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs);
   }
 
-  .canvas-container {
-    height: 400px;
+  .legend-item {
+    font-size: 0.7rem;
   }
 }
 </style>

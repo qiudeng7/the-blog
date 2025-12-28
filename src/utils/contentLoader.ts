@@ -18,7 +18,8 @@ export async function loadTechnologies(): Promise<Technology[]> {
   try {
     // 使用 Vite 的 glob 导入所有 markdown 文件
     const modules = import.meta.glob('../../content/technologies/*.md', {
-      as: 'raw'
+      query: '?raw',
+      import: 'default'
     })
 
     const technologies: Technology[] = []
