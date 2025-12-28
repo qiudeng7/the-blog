@@ -4,7 +4,7 @@
       <span class="nav-icon">🏠</span>
       <span class="nav-text">首页</span>
     </RouterLink>
-    <RouterLink to="/software-development" class="nav-item" active-class="active">
+    <RouterLink to="/development" class="nav-item" active-class="active">
       <span class="nav-icon">📊</span>
       <span class="nav-text">软件开发坐标系</span>
     </RouterLink>

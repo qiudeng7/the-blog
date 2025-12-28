@@ -26,7 +26,7 @@ function handleNavigateToTechnology(event: CustomEvent) {
       name: 'TechnologyDetail',
       params: { title: technology.title }
     })
-  }, 800)
+  }, 400)
 }
 
 onMounted(() => {
@@ -51,7 +51,7 @@ onUnmounted(() => {
 
 /* 放大淡出转场动画 */
 .zoom-out-transition {
-  animation: zoomOutFade 0.8s ease-in forwards;
+  animation: zoomOutFade 0.4s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
 }
 
 @keyframes zoomOutFade {

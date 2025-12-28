@@ -12,7 +12,7 @@ import type { Technology } from '../types/content'
 export async function loadTechnologies(): Promise<Technology[]> {
   try {
     // 使用 Vite 的 glob 导入所有 markdown 文件
-    const modules = import.meta.glob('../../content/technologies/*.md', {
+    const modules = import.meta.glob('../../content/development/*.md', {
       query: '?raw',
       import: 'default'
     })
